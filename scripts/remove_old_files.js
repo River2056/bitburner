@@ -1,4 +1,4 @@
-/** @param {NS} ns */
+/** @param {import(".").NS} ns */
 const servers = new Set();
 servers.add("home");
 

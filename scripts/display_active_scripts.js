@@ -1,4 +1,4 @@
-/** @param {NS} ns */
+/** @param {import(".").NS} ns */
 export async function main(ns) {
   const HOME = "home";
   const MINER = "miner.js";

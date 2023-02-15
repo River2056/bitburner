@@ -1,5 +1,4 @@
-/** @param {NS} ns */
-
+/** @param {import(".").NS} ns */
 const scriptName = "miner.js";
 const home = "home";
 
@@ -20,10 +19,11 @@ const execCustomScript = (host, moneyThresh, securityThresh, ns) => {
   }
 };
 
-const servers = new Set();
-const queue = [];
-const activatedServers = [];
 const deployAndRun = (node, ns, moneyThresh, securityThresh) => {
+  const servers = new Set();
+  const queue = [];
+  const activatedServers = [];
+
   if (!servers.has(node)) servers.add(node);
   const networks = ns.scan(node).filter((n) => !servers.has(n));
   networks.forEach((n) => queue.push(n));
@@ -71,6 +71,8 @@ const deployAndRun = (node, ns, moneyThresh, securityThresh) => {
       .filter((f) => !servers.has(f))
       .forEach((fh) => queue.push(fh));
   }
+
+  return activatedServers;
 };
 
 export async function main(ns) {
@@ -78,8 +80,12 @@ export async function main(ns) {
     ["money", 0.2],
     ["secr", 5],
   ]);
-  deployAndRun(ns.getHostname(), ns, commandArgs.money, commandArgs.secr);
-  ns.tprint(`servers added in list:`, servers);
+  const activatedServers = deployAndRun(
+    ns.getHostname(),
+    ns,
+    commandArgs.money,
+    commandArgs.secr
+  );
   ns.tprint("activated servers: ", activatedServers);
   ns.tprint(`activated server count: ${activatedServers.length}`);
 }

@@ -1,4 +1,4 @@
-/** @param {NS} ns */
+/** @param {import(".").NS} ns */
 const toastMsg = {
   INFO: "info",
   SUCCESS: "success",

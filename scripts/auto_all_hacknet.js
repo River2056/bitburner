@@ -1,4 +1,4 @@
-/** @param {NS} ns */
+/** @param {import(".").NS} ns */
 export async function main(ns) {
   ns.run("hacknet.js", 1, "--mode", "node", "--pct", 50);
   ns.run("hacknet.js", 1, "--mode", "level", "--pct", 50);

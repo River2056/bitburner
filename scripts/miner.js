@@ -1,4 +1,4 @@
-/** @param {NS} ns */
+/** @param {import(".").NS} ns */
 export async function main(ns) {
   const target = ns.args[0];
   const moneyThresh = ns.getServerMaxMoney(target) * ns.args[1];
