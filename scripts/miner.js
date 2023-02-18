@@ -12,7 +12,7 @@ export async function main(ns) {
 
       while (
         ns.getServerSecurityLevel(target) > securityThresh &&
-        ns.getServerRequiredHackingLevel(target) < ns.getHackingLevel()
+        ns.getServerRequiredHackingLevel(target) <= ns.getHackingLevel()
       ) {
         await ns.weaken(target);
       }

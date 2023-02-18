@@ -1,24 +1,27 @@
-/** @param {import(".").NS} ns */
+import utils from "./utils";
+import c from "./constants";
 const scriptName = "miner.js";
 const home = "home";
 
+/** @param {import(".").NS} ns */
 const execCustomScript = (host, moneyThresh, securityThresh, ns) => {
   const availableServerRam =
     ns.getServerMaxRam(host) - ns.getServerUsedRam(host);
   const threadsToOpen = Math.floor(
-    availableServerRam / ns.getScriptRam(scriptName, home)
+    availableServerRam / ns.getScriptRam(c.MINER, c.HOME)
   );
 
   if (threadsToOpen > 0) {
-    ns.exec(scriptName, host, threadsToOpen, host, moneyThresh, securityThresh);
+    ns.exec(c.MINER, host, threadsToOpen, host, moneyThresh, securityThresh);
     ns.tprint(`server available ram: ${availableServerRam}`);
-    ns.tprint(`script ram: ${ns.getScriptRam(scriptName, home)}`);
+    ns.tprint(`script ram: ${ns.getScriptRam(c.MINER, c.HOME)}`);
     ns.tprint(
-      `successfully ran ${scriptName} on target ${host} with ${threadsToOpen} threads`
+      `successfully ran ${c.MINER} on target ${host} with ${threadsToOpen} threads`
     );
   }
 };
 
+/** @param {import(".").NS} ns */
 const deployAndRun = (node, ns, moneyThresh, securityThresh) => {
   const servers = new Set();
   const queue = [];
@@ -30,35 +33,19 @@ const deployAndRun = (node, ns, moneyThresh, securityThresh) => {
 
   while (queue.length > 0) {
     const host = queue.shift();
-    ns.rm(scriptName, host);
-    if (!ns.scp(scriptName, host, home)) {
-      ns.tprint(`failed to scp ${scriptName} to target ${host}`);
+    ns.rm(c.MINER, host);
+    if (!ns.scp(c.MINER, host, c.HOME)) {
+      ns.tprint(`failed to scp ${c.MINER} to target ${host}`);
     }
 
     ns.killall(host);
-
-    if (ns.getServerNumPortsRequired(host) != 0) {
-      if (ns.fileExists("BruteSSH.exe", home)) ns.brutessh(host);
-      if (ns.fileExists("FTPCrack.exe", home)) ns.ftpcrack(host);
-      if (ns.fileExists("relaySMTP.exe", home)) ns.relaysmtp(host);
-      if (ns.fileExists("HTTPWorm.exe", home)) ns.httpworm(host);
-      if (ns.fileExists("SQLInject.exe", home)) ns.sqlinject(host);
-    }
+    utils.openPorts(host, ns);
 
     if (!ns.hasRootAccess(host)) {
       ns.tprint(`no root access on target ${host}`);
-      const hostServer = ns.getServer(host);
-      if (hostServer.openPortCount === ns.getServerNumPortsRequired(host)) {
-        ns.tprint(`enough ports opened, attempting to nuke target ${host}...`);
-        if (ns.getServerRequiredHackingLevel(host) <= ns.getHackingLevel()) {
-          ns.tprint(`hacking levels meets requirement, nuking...`);
-          ns.nuke(host);
-          ns.tprint(`target ${host} nuke successful`);
-          execCustomScript(host, moneyThresh, securityThresh, ns);
-          activatedServers.push(host);
-        }
-      } else {
-        ns.tprint(`not enough ports opened on target ${host}, aborting...`);
+      if (utils.nuke(host, ns)) {
+        execCustomScript(host, moneyThresh, securityThresh, ns);
+        activatedServers.push(host);
       }
     } else {
       ns.tprint(`target ${host} has root access, running script...`);
@@ -75,6 +62,7 @@ const deployAndRun = (node, ns, moneyThresh, securityThresh) => {
   return activatedServers;
 };
 
+/** @param {import(".").NS} ns */
 export async function main(ns) {
   const commandArgs = ns.flags([
     ["money", 0.2],
