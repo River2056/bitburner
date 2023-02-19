@@ -1,5 +1,5 @@
-import utils from "./utils";
-import c from "./constants";
+import { openPorts, nuke } from "./utils";
+import { HOME } from "./constants";
 
 /** @param {import(".").NS} ns*/
 export async function main(ns) {
@@ -13,9 +13,9 @@ export async function main(ns) {
     ns.singularity.connect(host);
     const children = ns.scan(host).filter(s => !visited.has(s));
     if (children == null && children.length <= 0) {
-      if (host === c.HOME) return;
-      utils.openPorts(host, ns);
-      utils.nuke(host, ns);
+      if (host === HOME) return;
+      openPorts(host, ns);
+      nuke(host, ns);
       const backdoorSuccessful = await ns.singularity.installBackdoor();
       ns.tprint(`host: ${host}, install backdoor: ${backdoorSuccessful}`);
       const parent = route.pop();
@@ -25,6 +25,6 @@ export async function main(ns) {
     connect(children[0]);
   }
 
-  await connect(c.HOME);
+  await connect(HOME);
 }
 

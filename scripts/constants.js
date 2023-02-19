@@ -1,6 +1,2 @@
-const constants = {
-  HOME: "home",
-  MINER: "miner.js"
-}
-
-export default constants;
+export const HOME = "home";
+export const MINER = "miner.js";

@@ -1,28 +1,8 @@
-import utils from "./utils";
-import c from "./constants";
-const scriptName = "miner.js";
-const home = "home";
+import { openPorts, nuke, exec } from "./utils";
+import { HOME, MINER } from "./constants";
 
 /** @param {import(".").NS} ns */
-const execCustomScript = (host, moneyThresh, securityThresh, ns) => {
-  const availableServerRam =
-    ns.getServerMaxRam(host) - ns.getServerUsedRam(host);
-  const threadsToOpen = Math.floor(
-    availableServerRam / ns.getScriptRam(c.MINER, c.HOME)
-  );
-
-  if (threadsToOpen > 0) {
-    ns.exec(c.MINER, host, threadsToOpen, host, moneyThresh, securityThresh);
-    ns.tprint(`server available ram: ${availableServerRam}`);
-    ns.tprint(`script ram: ${ns.getScriptRam(c.MINER, c.HOME)}`);
-    ns.tprint(
-      `successfully ran ${c.MINER} on target ${host} with ${threadsToOpen} threads`
-    );
-  }
-};
-
-/** @param {import(".").NS} ns */
-const deployAndRun = (node, ns, moneyThresh, securityThresh) => {
+export function deployAndRun(node, ns, moneyThresh, securityThresh) {
   const servers = new Set();
   const queue = [];
   const activatedServers = [];
@@ -33,23 +13,23 @@ const deployAndRun = (node, ns, moneyThresh, securityThresh) => {
 
   while (queue.length > 0) {
     const host = queue.shift();
-    ns.rm(c.MINER, host);
-    if (!ns.scp(c.MINER, host, c.HOME)) {
-      ns.tprint(`failed to scp ${c.MINER} to target ${host}`);
+    ns.rm(MINER, host);
+    if (!ns.scp(MINER, host, HOME)) {
+      ns.tprintf(`failed to scp ${MINER} to target ${host}`);
     }
 
     ns.killall(host);
-    utils.openPorts(host, ns);
+    openPorts(host, ns);
 
     if (!ns.hasRootAccess(host)) {
-      ns.tprint(`no root access on target ${host}`);
-      if (utils.nuke(host, ns)) {
-        execCustomScript(host, moneyThresh, securityThresh, ns);
+      ns.tprintf(`no root access on target ${host}`);
+      if (nuke(host, ns)) {
+        exec(MINER, host, moneyThresh, securityThresh, ns);
         activatedServers.push(host);
       }
     } else {
-      ns.tprint(`target ${host} has root access, running script...`);
-      execCustomScript(host, moneyThresh, securityThresh, ns);
+      ns.tprintf(`target ${host} has root access, running script...`);
+      exec(MINER, host, moneyThresh, securityThresh, ns);
       activatedServers.push(host);
     }
 
@@ -74,6 +54,8 @@ export async function main(ns) {
     commandArgs.money,
     commandArgs.secr
   );
-  ns.tprint("activated servers: ", activatedServers);
-  ns.tprint(`activated server count: ${activatedServers.length}`);
+  ns.tprintf("activated servers: ");
+  activatedServers.unshift("");
+  ns.tprintf(activatedServers.map((elem, index) => index !== 0 && index % 5 === 0 ? elem + "\n" : elem).join(" "));
+  ns.tprintf(`activated server count: ${activatedServers.length}`);
 }

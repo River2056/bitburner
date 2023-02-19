@@ -43,25 +43,29 @@ export async function main(ns) {
   recursiveScan(HOME, runningServers);
 
   let totalAmount = 0;
+  ns.tprintf("----------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+  ns.tprintf("|\tservers\t|\targs\t|\tramUsage\t|\tthreads\t|\tonlineMoneyMade\t|\tofflineMoneyMade\t");
+  ns.tprintf("----------------------------------------------------------------------------------------------------------------------------------------------------------------------");
   for (const server of runningServers) {
-    ns.tprint("----------------------------");
-    ns.tprint(`server: ${server.name}`);
-    ns.tprint(`args: ${server.args}`);
-    ns.tprint(`ramUsage: ${server.ramUsage}`);
-    ns.tprint(`threads: ${server.threads}`);
-    ns.tprint(`onlineExpGained: ${server.onlineExpGained}`);
+    ns.tprintf(`|\t${server.name}\t|`);
+    /* ns.tprintf("----------------------------");
+    ns.tprintf(`server: ${server.name}`);
+    ns.tprintf(`args: ${server.args}`);
+    ns.tprintf(`ramUsage: ${server.ramUsage}`);
+    ns.tprintf(`threads: ${server.threads}`);
+    ns.tprintf(`onlineExpGained: ${server.onlineExpGained}`);
     totalAmount += server.onlineMoneyMade;
-    ns.tprint(
+    ns.tprintf(
       `onlineMoneyMade: ${server.onlineMoneyMade.toLocaleString("en-US")}`
     );
-    ns.tprint(`onlineRunningTime: ${server.onlineRunningTime}`);
-    ns.tprint(`offlineExpGained: ${server.offlineExpGained}`);
+    ns.tprintf(`onlineRunningTime: ${server.onlineRunningTime}`);
+    ns.tprintf(`offlineExpGained: ${server.offlineExpGained}`);
     totalAmount += server.offlineMoneyMade;
-    ns.tprint(
+    ns.tprintf(
       `offlineMoneyMade: ${server.offlineMoneyMade.toLocaleString("en-US")}`
     );
-    ns.tprint(`offlineRunningTime: ${server.offlineRunningTime}`);
-    ns.tprint("----------------------------");
+    ns.tprintf(`offlineRunningTime: ${server.offlineRunningTime}`);
+    ns.tprintf("----------------------------"); */
   }
-  ns.tprint(`total amount earned: ${totalAmount.toLocaleString("en-US")}`);
+  ns.tprintf(`total amount earned: ${totalAmount.toLocaleString("en-US")}`);
 }
