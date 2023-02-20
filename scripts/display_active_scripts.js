@@ -43,11 +43,40 @@ export async function main(ns) {
   recursiveScan(HOME, runningServers);
 
   let totalAmount = 0;
-  ns.tprintf("----------------------------------------------------------------------------------------------------------------------------------------------------------------------");
-  ns.tprintf("|\tservers\t|\targs\t|\tramUsage\t|\tthreads\t|\tonlineMoneyMade\t|\tofflineMoneyMade\t");
-  ns.tprintf("----------------------------------------------------------------------------------------------------------------------------------------------------------------------");
+  let len = Math.max(
+    ...runningServers.map((s) => new String(s.args + "").length),
+    "offlineMoneyMade".length
+  );
+  len += 4;
+
+  const header = `|${formatString(len, "server")}|${formatString(
+    len,
+    "args"
+  )}|${formatString(len, "ramUsage")}|${formatString(
+    len,
+    "threads"
+  )}|${formatString(len, "onlineMoneyMade")}|${formatString(
+    len,
+    "offlineMoneyMade"
+  )}|`;
+
+  ns.tprintf("-".repeat(header.length));
+  ns.tprintf(header);
+  ns.tprintf("-".repeat(header.length));
   for (const server of runningServers) {
-    ns.tprintf(`|\t${server.name}\t|`);
+    let content = `|${formatString(len, server.name)}|${formatString(
+      len,
+      server.args + ""
+    )}|${formatString(len, server.ramUsage + "")}|${formatString(
+      len,
+      server.threads + ""
+    )}|${formatString(
+      len,
+      server.onlineMoneyMade.toLocaleString("en-US")
+    )}|${formatString(len, server.offlineMoneyMade.toLocaleString("en-US"))}|`;
+    ns.tprintf(content);
+    totalAmount += server.onlineMoneyMade;
+    totalAmount += server.offlineMoneyMade;
     /* ns.tprintf("----------------------------");
     ns.tprintf(`server: ${server.name}`);
     ns.tprintf(`args: ${server.args}`);
@@ -67,5 +96,10 @@ export async function main(ns) {
     ns.tprintf(`offlineRunningTime: ${server.offlineRunningTime}`);
     ns.tprintf("----------------------------"); */
   }
+  ns.tprintf("-".repeat(header.length));
   ns.tprintf(`total amount earned: ${totalAmount.toLocaleString("en-US")}`);
+}
+
+export function formatString(formatLength, s) {
+  return " ".repeat(2) + s + " ".repeat(formatLength - s.length - 2);
 }
