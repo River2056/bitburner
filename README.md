@@ -6,4 +6,4 @@
 3. cd into bitburner
 4. `npm install`
 5. `npm start`
-6. connect to localhost:12525 on bitburner web version
+6. connect to localhost:12525 on bitburner web version using Options > Remote API
