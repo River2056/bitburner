@@ -33,7 +33,10 @@ export async function main(ns) {
     )}|${formatString(maxNameLen, node.ram + "")}|${formatString(
       maxNameLen,
       node.cores + ""
-    )}|${formatString(maxNameLen, node.production.toLocaleString("en-US"))}|${formatString(
+    )}|${formatString(
+      maxNameLen,
+      node.production.toLocaleString("en-US")
+    )}|${formatString(
       maxNameLen,
       node.totalProduction.toLocaleString("en-US")
     )}|`;
@@ -41,6 +44,11 @@ export async function main(ns) {
     nodeTotalProduction += node.production;
     nodeOverallTotalProduction += node.totalProduction;
   }
-  ns.tprintf(`total production: ${nodeTotalProduction.toLocaleString("en-US")}`);
-  ns.tprintf(`overall production: ${nodeOverallTotalProduction.toLocaleString("en-US")}`);
+  ns.tprintf("-".repeat(header.length));
+  ns.tprintf(
+    `total production: ${nodeTotalProduction.toLocaleString("en-US")}`
+  );
+  ns.tprintf(
+    `overall production: ${nodeOverallTotalProduction.toLocaleString("en-US")}`
+  );
 }
