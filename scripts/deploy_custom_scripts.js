@@ -17,7 +17,12 @@ function findMostProfitableTarget(host, ns) {
 
   while (queue.length > 0) {
     const child = queue.shift();
+    const ps = ns.getServer(child);
+    openPorts(child, ns);
+    nuke(child, ns);
     if (
+      ps.openPortCount >= ns.getServerNumPortsRequired(child) &&
+      ns.hasRootAccess(child) &&
       ns.getServerRequiredHackingLevel(child) <= ns.getHackingLevel() &&
       ns.getServerMaxMoney(child) > maxServerMoney
     ) {
@@ -41,10 +46,6 @@ function findMostProfitableTarget(host, ns) {
  * */
 function deployCustomAndRun(target, mode, list, ns) {
   const memRequired = ns.getScriptRam(MINER_CUSTOM, HOME);
-  if (memRequired > ns.getServerMaxRam(host)) {
-    ns.tprintf(`script required memory larger than server itself!`);
-    return;
-  }
   const servers = new Set();
   const queue = [];
 
@@ -85,7 +86,8 @@ export async function main(ns) {
     return;
   }
 
-  const purchasedServers = ns.getPurchasedServers();
+  const purchasedServers = ns.getPurchasedServers()
+    .filter(ps => ns.getServer(ps).maxRam > ns.getScriptRam(MINER_CUSTOM, HOME));
   if (purchasedServers.length < 3) {
     ns.tprintf("need at least 3 or more servers to run this script");
     return;
@@ -104,8 +106,6 @@ export async function main(ns) {
 
   let profitableServer = findMostProfitableTarget(HOME, ns);
   if (args.target) profitableServer = args.target;
-  openPorts(profitableServer, ns);
-  nuke(profitableServer, ns);
   if (!args.mode) {
     deployCustomAndRun(profitableServer, "grow", growServers, ns);
     deployCustomAndRun(profitableServer, "weaken", weakenServers, ns);
@@ -115,4 +115,5 @@ export async function main(ns) {
     deployCustomAndRun(profitableServer, args.mode, weakenServers, ns);
     deployCustomAndRun(profitableServer, args.mode, hackServers, ns);
   }
+  ns.tprintf(`deployed on server: ${profitableServer}`);
 }

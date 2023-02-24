@@ -2,26 +2,35 @@
 const servers = async (name, mode, pct, ns) => {
   switch (mode) {
     case "server":
-      if (ns.getPurchasedServers().length < ns.getPurchasedServerLimit() &&
-        (ns.getPlayer().money * (pct / 100)) > ns.getPurchasedServerCost(Math.pow(2, 1))) {
+      if (
+        ns.getPurchasedServers().length < ns.getPurchasedServerLimit() &&
+        ns.getPlayer().money * (pct / 100) >
+          ns.getPurchasedServerCost(Math.pow(2, 1))
+      ) {
         const newServerName = ns.purchaseServer(name, Math.pow(2, 1));
-        ns.toast(`purchased new server: ${newServerName} with 2GB ram`);
+        ns.print(`purchased new server: ${newServerName} with 2GB ram`);
       }
       break;
     case "ram":
       const serverList = ns.getPurchasedServers();
-      serverList.forEach(s => {
+      serverList.forEach((s) => {
         const childServer = ns.getServer(s);
-        let totalRam = childServer.maxRam + childServer.ramUsed;
-        let currentRamLevel = Math.log2(totalRam);
-        if ((ns.getPlayer().money * (pct / 100)) > ns.getPurchasedServerUpgradeCost(s, totalRam * 2)) {
-          ns.upgradePurchasedServer(s, totalRam * 2);
-          ns.toast(`successfully upgraded server ${s} with ${totalRam * 2}GB ram`);
+        if (
+          ns.getPlayer().money * (pct / 100) >
+          ns.getPurchasedServerUpgradeCost(s, childServer.maxRam * 2)
+        ) {
+          ns.upgradePurchasedServer(s, childServer.maxRam * 2);
+          ns.print(
+            `successfully upgraded server ${s} with ${
+              childServer.maxRam * 2
+            }GB ram`
+          );
         }
       });
+
       break;
   }
-}
+};
 
 /** @param {import(".").NS} ns*/
 export async function main(ns) {
@@ -29,7 +38,7 @@ export async function main(ns) {
     ["name", "river"],
     ["mode", ""],
     ["pct", 50],
-    ["help", false]
+    ["help", false],
   ]);
 
   if (!args || args.help) {
@@ -52,4 +61,3 @@ export async function main(ns) {
     await ns.sleep(1000);
   }
 }
-
