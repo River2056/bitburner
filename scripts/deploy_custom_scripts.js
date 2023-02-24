@@ -41,6 +41,10 @@ function findMostProfitableTarget(host, ns) {
  * */
 function deployCustomAndRun(target, mode, list, ns) {
   const memRequired = ns.getScriptRam(MINER_CUSTOM, HOME);
+  if (memRequired > ns.getServerMaxRam(host)) {
+    ns.tprintf(`script required memory larger than server itself!`);
+    return;
+  }
   const servers = new Set();
   const queue = [];
 
@@ -87,8 +91,7 @@ export async function main(ns) {
     return;
   }
   const hackServers = [];
-  for (let i = 0; i < 2; i++)
-    hackServers.push(purchasedServers.shift());
+  for (let i = 0; i < 2; i++) hackServers.push(purchasedServers.shift());
 
   const groupsLenght = Math.floor(purchasedServers.length / 2);
   const growServers = [];
