@@ -6,5 +6,10 @@ export async function main(ns) {
     ns.tprintf(`server: ${server.hostname}, ram: ${server.maxRam}`);
     ns.tprintf(`next upgrade cost: ${ns.getPurchasedServerUpgradeCost(server.hostname, Math.pow(server.maxRam, 2)).toLocaleString("en-US")}`);
   });
+
+  if (purchasedServers.length <= ns.getPurchasedServerLimit()) {
+    ns.tprintf("\n");
+    ns.tprintf(`next server cost: ${ns.getPurchasedServerCost(Math.pow(2, 1)).toLocaleString("en-US")}`);
+  }
 }
 
