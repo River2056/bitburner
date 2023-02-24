@@ -29,9 +29,19 @@ export async function main(ns) {
     switch (args.mode) {
       case "grow":
         await ns.grow(args.target, { stock: true });
+        ns.printf(
+          `target: ${
+            args.target
+          }, available money: ${ns.getServerMoneyAvailable(args.target)}`
+        );
         break;
       case "weaken":
         await ns.weaken(args.target, { stock: true });
+        ns.printf(
+          `target: ${args.target}, security: ${ns.getServerSecurityLevel(
+            args.target
+          )}`
+        );
         break;
       case "hack":
         if (

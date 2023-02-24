@@ -68,6 +68,7 @@ function deployCustomAndRun(target, mode, list, ns) {
 export async function main(ns) {
   const args = ns.flags([
     ["target", ""],
+    ["mode", ""],
     ["help", false],
   ]);
 
@@ -81,20 +82,34 @@ export async function main(ns) {
   }
 
   const purchasedServers = ns.getPurchasedServers();
-  const groupsLenght = Math.floor(purchasedServers.length / 3);
-  const growServers = purchasedServers.slice(0, groupsLenght);
-  const weakenServers = purchasedServers.slice(groupsLenght, groupsLenght * 2);
-  const hackServers = purchasedServers.slice(
-    groupsLenght * 2,
-    purchasedServers.length + 1
-  );
+  if (purchasedServers.length < 3) {
+    ns.tprintf("need at least 3 or more servers to run this script");
+    return;
+  }
+  const hackServers = [];
+  for (let i = 0; i < 2; i++)
+    hackServers.push(purchasedServers.shift());
+
+  const groupsLenght = Math.floor(purchasedServers.length / 2);
+  const growServers = [];
+  for (let i = 0; i < groupsLenght; i++)
+    growServers.push(purchasedServers.shift());
+
+  const weakenServers = [];
+  for (let i = 0; i < purchasedServers.length; i++)
+    weakenServers.push(purchasedServers.shift());
 
   let profitableServer = findMostProfitableTarget(HOME, ns);
-  if (args.target)
-    profitableServer = args.target;
+  if (args.target) profitableServer = args.target;
   openPorts(profitableServer, ns);
   nuke(profitableServer, ns);
-  deployCustomAndRun(profitableServer, "grow", growServers, ns);
-  deployCustomAndRun(profitableServer, "weaken", weakenServers, ns);
-  deployCustomAndRun(profitableServer, "hack", hackServers, ns);
+  if (!args.mode) {
+    deployCustomAndRun(profitableServer, "grow", growServers, ns);
+    deployCustomAndRun(profitableServer, "weaken", weakenServers, ns);
+    deployCustomAndRun(profitableServer, "hack", hackServers, ns);
+  } else {
+    deployCustomAndRun(profitableServer, args.mode, growServers, ns);
+    deployCustomAndRun(profitableServer, args.mode, weakenServers, ns);
+    deployCustomAndRun(profitableServer, args.mode, hackServers, ns);
+  }
 }
