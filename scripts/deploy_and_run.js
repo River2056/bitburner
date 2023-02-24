@@ -1,5 +1,5 @@
 import { openPorts, nuke, exec } from "./utils";
-import { HOME, MINER } from "./constants";
+import { HOME, MINER, CUSTOM_SERVER } from "./constants";
 
 /** @param {import(".").NS} ns */
 export function deployAndRun(node, ns, moneyThresh, securityThresh) {
@@ -13,6 +13,8 @@ export function deployAndRun(node, ns, moneyThresh, securityThresh) {
 
   while (queue.length > 0) {
     const host = queue.shift();
+    if (host.startsWith(CUSTOM_SERVER))
+      continue;
     ns.rm(MINER, host);
     if (!ns.scp(MINER, host, HOME)) {
       ns.tprintf(`failed to scp ${MINER} to target ${host}`);

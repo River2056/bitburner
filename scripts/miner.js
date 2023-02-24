@@ -5,16 +5,17 @@ export async function main(ns) {
   const securityThresh = ns.getServerMinSecurityLevel(target) + ns.args[2];
 
   while (true) {
-    let hacked = await ns.hack(target);
+    let hacked = await ns.hack(target, { stock: true });
     if (hacked <= 0) {
-      while (ns.getServerMoneyAvailable(target) < moneyThresh)
-        await ns.grow(target);
+      if (ns.getServerMoneyAvailable(target) < moneyThresh) {
+        await ns.grow(target, { stock: true });
+      }
 
-      while (
+      if (
         ns.getServerSecurityLevel(target) > securityThresh &&
         ns.getServerRequiredHackingLevel(target) <= ns.getHackingLevel()
       ) {
-        await ns.weaken(target);
+        await ns.weaken(target, { stock: true });
       }
     }
   }

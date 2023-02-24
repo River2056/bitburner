@@ -1,7 +1,7 @@
+import { HOME, MINER, MINER_CUSTOM } from "./constants";
+
 /** @param {import(".").NS} ns */
 export async function main(ns) {
-  const HOME = "home";
-  const MINER = "miner.js";
   const hasVisited = new Set();
   const queue = [];
   const runningServers = [];
@@ -15,7 +15,7 @@ export async function main(ns) {
       const server = queue.shift();
       const processes = ns.ps(server);
       processes.forEach((p) => {
-        if (p.filename === MINER) {
+        if (p.filename === MINER || p.filename === MINER_CUSTOM) {
           const serverInfo = ns.getRunningScript(p.pid, server);
           scriptRunningServers.push({
             name: serverInfo.server,
