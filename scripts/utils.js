@@ -1,4 +1,4 @@
-import { HOME } from "./constants";
+import { HOME, CUSTOM_SERVER } from "./constants";
 
 /** @param {import(".").NS} ns */
 export function openPorts(host, ns) {
@@ -61,4 +61,42 @@ export function exec(name = "", host = "", moneyThresh = 0.2, securityThresh = 5
       `successfully ran ${name} on target ${host} with ${threadsToOpen} threads`
     );
   }
+}
+
+/** @param {import(".").NS} ns
+ * @param {string} host
+ * */
+export function findMostProfitableTarget(host, ns) {
+  const servers = new Set();
+  const queue = [];
+  let maxServerMoney = 0;
+  let profitableServer = "";
+
+  servers.add(host);
+  ns.scan(host)
+    .filter((s) => !s.startsWith(CUSTOM_SERVER) && !servers.has(s))
+    .forEach((s) => queue.push(s));
+
+  while (queue.length > 0) {
+    const child = queue.shift();
+    const ps = ns.getServer(child);
+    openPorts(child, ns);
+    nuke(child, ns);
+    if (
+      ps.openPortCount >= ns.getServerNumPortsRequired(child) &&
+      ns.hasRootAccess(child) &&
+      ns.getServerRequiredHackingLevel(child) <= ns.getHackingLevel() &&
+      ns.getServerMaxMoney(child) > maxServerMoney
+    ) {
+      maxServerMoney = Math.max(maxServerMoney, ns.getServerMaxMoney(child));
+      profitableServer = child;
+    }
+
+    servers.add(child);
+    ns.scan(child)
+      .filter((s) => !s.startsWith(CUSTOM_SERVER) && !servers.has(s))
+      .forEach((s) => queue.push(s));
+  }
+
+  return profitableServer;
 }

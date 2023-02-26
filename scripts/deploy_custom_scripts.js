@@ -1,43 +1,5 @@
-import { openPorts, nuke } from "./utils";
-import { HOME, MINER_CUSTOM, CUSTOM_SERVER } from "./constants";
-
-/** @param {import(".").NS} ns
- * @param {string} host
- * */
-function findMostProfitableTarget(host, ns) {
-  const servers = new Set();
-  const queue = [];
-  let maxServerMoney = 0;
-  let profitableServer = "";
-
-  servers.add(host);
-  ns.scan(host)
-    .filter((s) => !s.startsWith(CUSTOM_SERVER) && !servers.has(s))
-    .forEach((s) => queue.push(s));
-
-  while (queue.length > 0) {
-    const child = queue.shift();
-    const ps = ns.getServer(child);
-    openPorts(child, ns);
-    nuke(child, ns);
-    if (
-      ps.openPortCount >= ns.getServerNumPortsRequired(child) &&
-      ns.hasRootAccess(child) &&
-      ns.getServerRequiredHackingLevel(child) <= ns.getHackingLevel() &&
-      ns.getServerMaxMoney(child) > maxServerMoney
-    ) {
-      maxServerMoney = Math.max(maxServerMoney, ns.getServerMaxMoney(child));
-      profitableServer = child;
-    }
-
-    servers.add(child);
-    ns.scan(child)
-      .filter((s) => !s.startsWith(CUSTOM_SERVER) && !servers.has(s))
-      .forEach((s) => queue.push(s));
-  }
-
-  return profitableServer;
-}
+import { openPorts, nuke, findMostProfitableTarget } from "./utils";
+import { HOME, MINER, MINER_CUSTOM, CUSTOM_SERVER } from "./constants";
 
 /** @param {import(".").NS} ns
  * @param {string} target
@@ -45,7 +7,7 @@ function findMostProfitableTarget(host, ns) {
  * @param {string[]} list
  * */
 function deployCustomAndRun(target, mode, list, ns) {
-  const memRequired = ns.getScriptRam(MINER_CUSTOM, HOME);
+  const memRequired = ns.getScriptRam(MINER, HOME);
   const servers = new Set();
   const queue = [];
 
@@ -56,8 +18,9 @@ function deployCustomAndRun(target, mode, list, ns) {
     if (!servers.has(host)) servers.add(host);
 
     ns.rm(MINER_CUSTOM, host);
-    if (!ns.scp(MINER_CUSTOM, host, HOME)) {
-      ns.tprintf(`failed to scp ${MINER_CUSTOM} to host ${host}`);
+    ns.rm(MINER, host)
+    if (!ns.scp(MINER, host, HOME)) {
+      ns.tprintf(`failed to scp ${MINER} to host ${host}`);
       return;
     }
 
@@ -65,7 +28,8 @@ function deployCustomAndRun(target, mode, list, ns) {
     const threads = Math.floor(
       (ns.getServerMaxRam(host) - ns.getServerUsedRam(host)) / memRequired
     );
-    ns.exec(MINER_CUSTOM, host, threads, "--target", target, "--mode", mode);
+    // ns.exec(MINER_CUSTOM, host, threads, "--target", target, "--mode", mode);
+    ns.exec(MINER, host, threads, target, 0.8, 0);
   }
 }
 
@@ -87,7 +51,7 @@ export async function main(ns) {
   }
 
   const purchasedServers = ns.getPurchasedServers()
-    .filter(ps => ns.getServer(ps).maxRam > ns.getScriptRam(MINER_CUSTOM, HOME));
+    .filter(ps => ns.getServer(ps).maxRam > ns.getScriptRam(MINER, HOME));
   if (purchasedServers.length < 3) {
     ns.tprintf("need at least 3 or more servers to run this script");
     return;
