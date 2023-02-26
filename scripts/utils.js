@@ -100,3 +100,37 @@ export function findMostProfitableTarget(host, ns) {
 
   return profitableServer;
 }
+
+/**
+  * @param {import(".").NS} ns
+  * @param {string} host
+  * */
+export function findProfitableTargets(ns) {
+  const targets = [];
+  const servers = new Set();
+  const queue = [];
+
+  queue.push(HOME);
+
+  while (queue.length > 0) {
+    const host = queue.shift();
+    if (!servers.has(host)) servers.add(host);
+    const children = ns.scan(host).filter(child => !child.startsWith(CUSTOM_SERVER) && !servers.has(child));
+    children.map(child => ns.getServer(child)).filter(server => {
+      openPorts(server.hostname, ns);
+      nuke(server.hostname, ns);
+      if (server.openPortCount >= ns.getServerNumPortsRequired(server.hostname) && 
+          ns.hasRootAccess(server.hostname) &&
+          ns.getServerRequiredHackingLevel(server.hostname) <= ns.getHackingLevel() && 
+          server.moneyMax > 0) {
+        return server;
+      }
+    })
+    .forEach(server => targets.push(server));
+
+    children.forEach(child => queue.push(child));
+  }
+
+  targets.sort((a, b) => b.moneyMax - a.moneyMax);
+  return targets;
+}
