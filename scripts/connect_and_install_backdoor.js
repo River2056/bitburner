@@ -3,6 +3,23 @@ import { HOME } from "./constants";
 
 /** @param {import(".").NS} ns*/
 export async function main(ns) {
+  const stack = [];
+  const visited = new Set();
+
+  stack.push(HOME);
+  visited.add(HOME);
+
+  while (stack.length > 0) {
+    const host = stack.pop();
+    const children = ns.scan(host);
+    if (children != undefined && children.length > 0) {
+
+    }
+  }
+}
+
+/** @param {import(".").NS} ns*/
+/* export async function main(ns) {
   const route = [];
   const visited = new Set();
 
@@ -17,7 +34,7 @@ export async function main(ns) {
       openPorts(host, ns);
       nuke(host, ns);
       const backdoorSuccessful = await ns.singularity.installBackdoor();
-      ns.tprint(`host: ${host}, install backdoor: ${backdoorSuccessful}`);
+      ns.tprintf(`host: ${host}, install backdoor: ${backdoorSuccessful}`);
       const parent = route.pop();
       ns.singularity.connect(parent);
       connect(parent);
@@ -26,5 +43,5 @@ export async function main(ns) {
   }
 
   await connect(HOME);
-}
+} */
 
