@@ -50,10 +50,9 @@ export async function main(ns) {
   }
 
   const profitableServers = findProfitableTargets(ns);
-  let counter = 0;
   for (let i = 0; i < purchasedServers.length; i++) {
     deployCustomAndRun(
-      profitableServers[counter++ % purchasedServers.length].hostname,
+      profitableServers[i % profitableServers.length].hostname,
       purchasedServers[i],
       args.money,
       args.security,
