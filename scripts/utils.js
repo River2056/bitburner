@@ -119,18 +119,81 @@ export function findProfitableTargets(ns) {
     children.map(child => ns.getServer(child)).filter(server => {
       openPorts(server.hostname, ns);
       nuke(server.hostname, ns);
-      if (server.openPortCount >= ns.getServerNumPortsRequired(server.hostname) && 
-          ns.hasRootAccess(server.hostname) &&
-          ns.getServerRequiredHackingLevel(server.hostname) <= ns.getHackingLevel() && 
-          server.moneyMax > 0) {
+      if (server.openPortCount >= ns.getServerNumPortsRequired(server.hostname) &&
+        ns.hasRootAccess(server.hostname) &&
+        ns.getServerRequiredHackingLevel(server.hostname) <= ns.getHackingLevel() &&
+        server.moneyMax > 0) {
         return server;
       }
     })
-    .forEach(server => targets.push(server));
+      .forEach(server => targets.push(server));
 
     children.forEach(child => queue.push(child));
   }
 
   targets.sort((a, b) => b.moneyMax - a.moneyMax);
   return targets;
+}
+
+/**
+  * @param {import(".").NS} ns
+  * */
+export function findEveryNodeServer(ns) {
+  const map = {};
+  const nodes = [];
+  const servers = new Set();
+  const stack = [];
+
+  stack.push(HOME);
+
+  while (stack.length > 0) {
+    const host = stack.pop();
+    if (!servers.has(host)) servers.add(host);
+    const serverObj = ns.getServer(host);
+
+    let route = [];
+    if (map[host] != undefined && map[host] != null && map[host] !== "") {
+      route = map[host];
+    } else {
+      recursiveScan("", HOME, host, route, ns);
+      map[host] = route;
+    }
+    
+    serverObj.route = route.join(" > ");
+    nodes.push(serverObj);
+
+    ns.scan(host)
+      .filter(child => !child.startsWith(CUSTOM_SERVER) && !servers.has(child))
+      .forEach(child => stack.push(child));
+  }
+
+  nodes.sort((a, b) => a.requiredHackingSkill - b.requiredHackingSkill)
+
+  return nodes;
+}
+
+/**
+  * @param {string} parent
+  * @param {string} server
+  * @param {target} target
+  * @param {string[]} route
+  * @param {import(".").NS} ns
+  * */
+export function recursiveScan(parent, server, target, route, ns) {
+  const children = ns.scan(server);
+  for (const child of children) {
+    if (child === parent) continue;
+
+    if (child === target) {
+      route.unshift(child);
+      route.unshift(server);
+      return true;
+    }
+
+    if (recursiveScan(server, child, target, route, ns)) {
+      route.unshift(server);
+      return true;
+    }
+  }
+  return false;
 }
