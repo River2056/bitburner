@@ -1,4 +1,4 @@
-import { HOME } from "./constants";
+import { HOME, CUSTOM_SERVER } from "./constants";
 
 /** @param {import(".").NS} ns */
 export function openPorts(host, ns) {
@@ -61,4 +61,139 @@ export function exec(name = "", host = "", moneyThresh = 0.2, securityThresh = 5
       `successfully ran ${name} on target ${host} with ${threadsToOpen} threads`
     );
   }
+}
+
+/** @param {import(".").NS} ns
+ * @param {string} host
+ * */
+export function findMostProfitableTarget(host, ns) {
+  const servers = new Set();
+  const queue = [];
+  let maxServerMoney = 0;
+  let profitableServer = "";
+
+  servers.add(host);
+  ns.scan(host)
+    .filter((s) => !s.startsWith(CUSTOM_SERVER) && !servers.has(s))
+    .forEach((s) => queue.push(s));
+
+  while (queue.length > 0) {
+    const child = queue.shift();
+    const ps = ns.getServer(child);
+    openPorts(child, ns);
+    nuke(child, ns);
+    if (
+      ps.openPortCount >= ns.getServerNumPortsRequired(child) &&
+      ns.hasRootAccess(child) &&
+      ns.getServerRequiredHackingLevel(child) <= ns.getHackingLevel() &&
+      ns.getServerMaxMoney(child) > maxServerMoney
+    ) {
+      maxServerMoney = Math.max(maxServerMoney, ns.getServerMaxMoney(child));
+      profitableServer = child;
+    }
+
+    servers.add(child);
+    ns.scan(child)
+      .filter((s) => !s.startsWith(CUSTOM_SERVER) && !servers.has(s))
+      .forEach((s) => queue.push(s));
+  }
+
+  return profitableServer;
+}
+
+/**
+  * @param {import(".").NS} ns
+  * @param {string} host
+  * */
+export function findProfitableTargets(ns) {
+  const targets = [];
+  const servers = new Set();
+  const queue = [];
+
+  queue.push(HOME);
+
+  while (queue.length > 0) {
+    const host = queue.shift();
+    if (!servers.has(host)) servers.add(host);
+    const children = ns.scan(host).filter(child => !child.startsWith(CUSTOM_SERVER) && !servers.has(child));
+    children.map(child => ns.getServer(child)).filter(server => {
+      openPorts(server.hostname, ns);
+      nuke(server.hostname, ns);
+      if (server.openPortCount >= ns.getServerNumPortsRequired(server.hostname) &&
+        ns.hasRootAccess(server.hostname) &&
+        ns.getServerRequiredHackingLevel(server.hostname) <= ns.getHackingLevel() &&
+        server.moneyMax > 0) {
+        return server;
+      }
+    })
+      .forEach(server => targets.push(server));
+
+    children.forEach(child => queue.push(child));
+  }
+
+  targets.sort((a, b) => b.moneyMax - a.moneyMax);
+  return targets;
+}
+
+/**
+  * @param {import(".").NS} ns
+  * */
+export function findEveryNodeServer(ns) {
+  const map = {};
+  const nodes = [];
+  const servers = new Set();
+  const stack = [];
+
+  stack.push(HOME);
+
+  while (stack.length > 0) {
+    const host = stack.pop();
+    if (!servers.has(host)) servers.add(host);
+    const serverObj = ns.getServer(host);
+
+    let route = [];
+    if (map[host] != undefined && map[host] != null && map[host] !== "") {
+      route = map[host];
+    } else {
+      recursiveScan("", HOME, host, route, ns);
+      map[host] = route;
+    }
+    
+    serverObj.route = route.join(" > ");
+    nodes.push(serverObj);
+
+    ns.scan(host)
+      .filter(child => !child.startsWith(CUSTOM_SERVER) && !servers.has(child))
+      .forEach(child => stack.push(child));
+  }
+
+  nodes.sort((a, b) => a.requiredHackingSkill - b.requiredHackingSkill)
+
+  return nodes;
+}
+
+/**
+  * @param {string} parent
+  * @param {string} server
+  * @param {target} target
+  * @param {string[]} route
+  * @param {import(".").NS} ns
+  * */
+export function recursiveScan(parent, server, target, route, ns) {
+  const children = ns.scan(server);
+  for (const child of children) {
+    if (child === parent) continue;
+
+    if (child === target) {
+      route.unshift(child);
+      route.unshift(server);
+      return true;
+    }
+
+    if (recursiveScan(server, child, target, route, ns)) {
+      route.unshift(server);
+      return true;
+    }
+  }
+  return false;
 }

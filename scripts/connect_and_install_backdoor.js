@@ -24,7 +24,7 @@ export async function main(ns) {
   }
 
   const neighbours = ns.scan(HOME);
-  for () {
-
-  }
+  /* for () {
+    await connect(HOME);
+  } */
 }
