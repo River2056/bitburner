@@ -197,3 +197,13 @@ export function recursiveScan(parent, server, target, route, ns) {
   }
   return false;
 }
+
+/**
+  * @param {Date} currentTime
+  * */
+export function formatTime(currentTime) {
+  const hour = currentTime.getHours() < 10 ? `0${currentTime.getHours()}` : currentTime.getHours();
+  const min = currentTime.getMinutes() < 10 ? `0${currentTime.getMinutes()}` : currentTime.getMinutes();
+  const sec = currentTime.getSeconds() < 10 ? `0${currentTime.getSeconds()}` : currentTime.getSeconds();
+  return `${hour} : ${min} : ${sec}`;
+}
