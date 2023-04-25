@@ -1,3 +1,5 @@
+import { formatDateTime } from "./utils";
+
 /** @param {import(".").NS} ns*/
 export function checkForHackingPrograms(ns) {
   let hackingPrograms = [
@@ -25,8 +27,10 @@ export async function main(ns) {
   let customServers = [];
   let playerHackLevel = ns.getHackingLevel();
   let hasHackingProgramCount = checkForHackingPrograms(ns);
+  let freq = 10 * 60 * 1000; // in milliseconds
 
   while (true) {
+    let date = new Date();
     let restartCustomServerScript = false;
     const servers = ns.getPurchasedServers();
     if (servers.length !== customServers.length) {
@@ -45,8 +49,10 @@ export async function main(ns) {
 
     customServers = servers.map((s) => ns.getServer(s));
     if (restartCustomServerScript) {
-      if (ns.run("deploy_custom_scripts.js") !== 0)
+      if (ns.run("deploy_custom_scripts.js") !== 0) {
         ns.print("SUCCESS rerun deploy_custom_scripts.js...");
+        ns.print(formatDateTime(date));
+      }
     }
 
     const currentPlayerLevel = ns.getHackingLevel();
@@ -58,9 +64,12 @@ export async function main(ns) {
       ns.print(`WARN player hacking level difference detected`);
       ns.print(`SUCCESS rerun deploy_and_run.js...`);
       ns.run("deploy_and_run.js");
+      ns.print(formatDateTime(date));
     }
     playerHackLevel = currentPlayerLevel;
     hasHackingProgramCount = currentHackingProgramsCount;
-    await ns.sleep(10 * 60 * 1000);
+    date.setMilliseconds(date.getMilliseconds() + freq);
+    ns.print(`next execution time: ${formatDateTime(date)}`);
+    await ns.sleep(freq);
   }
 }

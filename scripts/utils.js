@@ -36,7 +36,13 @@ export function nuke(host, ns) {
 }
 
 /** @param {import(".").NS} ns */
-export function exec(name = "", host = "", moneyThresh = 0.2, securityThresh = 5, ns) {
+export function exec(
+  name = "",
+  host = "",
+  moneyThresh = 0.2,
+  securityThresh = 5,
+  ns
+) {
   if (!host) {
     ns.tprintf(`please provide host name!`);
     return;
@@ -102,9 +108,9 @@ export function findMostProfitableTarget(host, ns) {
 }
 
 /**
-  * @param {import(".").NS} ns
-  * @param {string} host
-  * */
+ * @param {import(".").NS} ns
+ * @param {string} host
+ * */
 export function findProfitableTargets(ns) {
   const targets = [];
   const servers = new Set();
@@ -115,20 +121,30 @@ export function findProfitableTargets(ns) {
   while (queue.length > 0) {
     const host = queue.shift();
     if (!servers.has(host)) servers.add(host);
-    const children = ns.scan(host).filter(child => !child.startsWith(CUSTOM_SERVER) && !servers.has(child));
-    children.map(child => ns.getServer(child)).filter(server => {
-      openPorts(server.hostname, ns);
-      nuke(server.hostname, ns);
-      if (server.openPortCount >= ns.getServerNumPortsRequired(server.hostname) &&
-        ns.hasRootAccess(server.hostname) &&
-        ns.getServerRequiredHackingLevel(server.hostname) <= ns.getHackingLevel() &&
-        server.moneyMax > 0) {
-        return server;
-      }
-    })
-      .forEach(server => targets.push(server));
+    const children = ns
+      .scan(host)
+      .filter(
+        (child) => !child.startsWith(CUSTOM_SERVER) && !servers.has(child)
+      );
+    children
+      .map((child) => ns.getServer(child))
+      .filter((server) => {
+        openPorts(server.hostname, ns);
+        nuke(server.hostname, ns);
+        if (
+          server.openPortCount >=
+            ns.getServerNumPortsRequired(server.hostname) &&
+          ns.hasRootAccess(server.hostname) &&
+          ns.getServerRequiredHackingLevel(server.hostname) <=
+            ns.getHackingLevel() &&
+          server.moneyMax > 0
+        ) {
+          return server;
+        }
+      })
+      .forEach((server) => targets.push(server));
 
-    children.forEach(child => queue.push(child));
+    children.forEach((child) => queue.push(child));
   }
 
   targets.sort((a, b) => b.moneyMax - a.moneyMax);
@@ -136,8 +152,8 @@ export function findProfitableTargets(ns) {
 }
 
 /**
-  * @param {import(".").NS} ns
-  * */
+ * @param {import(".").NS} ns
+ * */
 export function findEveryNodeServer(ns) {
   const map = {};
   const nodes = [];
@@ -158,27 +174,29 @@ export function findEveryNodeServer(ns) {
       recursiveScan("", HOME, host, route, ns);
       map[host] = route;
     }
-    
+
     serverObj.route = route.join(" > ");
     nodes.push(serverObj);
 
     ns.scan(host)
-      .filter(child => !child.startsWith(CUSTOM_SERVER) && !servers.has(child))
-      .forEach(child => stack.push(child));
+      .filter(
+        (child) => !child.startsWith(CUSTOM_SERVER) && !servers.has(child)
+      )
+      .forEach((child) => stack.push(child));
   }
 
-  nodes.sort((a, b) => a.requiredHackingSkill - b.requiredHackingSkill)
+  nodes.sort((a, b) => a.requiredHackingSkill - b.requiredHackingSkill);
 
   return nodes;
 }
 
 /**
-  * @param {string} parent
-  * @param {string} server
-  * @param {target} target
-  * @param {string[]} route
-  * @param {import(".").NS} ns
-  * */
+ * @param {string} parent
+ * @param {string} server
+ * @param {target} target
+ * @param {string[]} route
+ * @param {import(".").NS} ns
+ * */
 export function recursiveScan(parent, server, target, route, ns) {
   const children = ns.scan(server);
   for (const child of children) {
@@ -199,11 +217,43 @@ export function recursiveScan(parent, server, target, route, ns) {
 }
 
 /**
-  * @param {Date} currentTime
-  * */
+ * @param {Date} currentTime
+ * */
 export function formatTime(currentTime) {
-  const hour = currentTime.getHours() < 10 ? `0${currentTime.getHours()}` : currentTime.getHours();
-  const min = currentTime.getMinutes() < 10 ? `0${currentTime.getMinutes()}` : currentTime.getMinutes();
-  const sec = currentTime.getSeconds() < 10 ? `0${currentTime.getSeconds()}` : currentTime.getSeconds();
-  return `${hour} : ${min} : ${sec}`;
+  const hour =
+    currentTime.getHours() < 10
+      ? `0${currentTime.getHours()}`
+      : currentTime.getHours();
+  const min =
+    currentTime.getMinutes() < 10
+      ? `0${currentTime.getMinutes()}`
+      : currentTime.getMinutes();
+  const sec =
+    currentTime.getSeconds() < 10
+      ? `0${currentTime.getSeconds()}`
+      : currentTime.getSeconds();
+  return `${hour}:${min}:${sec}`;
+}
+
+/**
+ * @param {Date} currentTime
+ * */
+export function formatDate(currentTime) {
+  const year = currentTime.getFullYear();
+  const month =
+    currentTime.getMonth() + 1 < 10
+      ? `0${currentTime.getMonth() + 1}`
+      : currentTime.getMonth();
+  const date =
+    currentTime.getDate() < 10
+      ? `0${currentTime.getDate()}`
+      : currentTime.getDate();
+  return `${year}/${month}/${date}`;
+}
+
+/**
+ * @param {Date} currentTime
+ * */
+export function formatDateTime(currentTime) {
+  return `${formatDate(currentTime)} --- ${formatTime(currentTime)}`;
 }
