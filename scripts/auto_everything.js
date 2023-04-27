@@ -25,12 +25,14 @@ export function checkForHackingPrograms(ns) {
 /** @param {import(".").NS} ns*/
 export async function main(ns) {
   const args = ns.flags([
-    ["freq", 20],
-    ["help", false]
+    ["freq", 180],
+    ["help", false],
   ]);
 
   if (!args || args.help) {
-    ns.tprintf("automatically redeploys deploy_and_run & deploy_custom_scripts");
+    ns.tprintf(
+      "automatically redeploys deploy_and_run & deploy_custom_scripts"
+    );
     ns.tprintf("on set frequency (in minutes, default 20 mins)");
     ns.tprintf("use --freq to provide custom minutes");
     ns.tprintf("> run auto_everything --freq 30");
