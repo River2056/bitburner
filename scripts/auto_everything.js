@@ -2,24 +2,13 @@ import { formatDateTime } from "./utils";
 
 /** @param {import(".").NS} ns*/
 export function checkForHackingPrograms(ns) {
-  let hackingPrograms = [
-    "brutessh.exe",
-    "ftpcrack.exe",
-    "relaysmtp.exe",
-    "httpworm.exe",
-    "sqlinject.exe",
-  ];
   let hasCount = 0;
-
   if (ns.fileExists("brutessh.exe", "home")) hasCount++;
-
   if (ns.fileExists("ftpcrack.exe", "home")) hasCount++;
-
   if (ns.fileExists("relaysmtp.exe", "home")) hasCount++;
-
   if (ns.fileExists("httpworm.exe", "home")) hasCount++;
-
   if (ns.fileExists("sqlinject.exe", "home")) hasCount++;
+  return hasCount;
 }
 
 /** @param {import(".").NS} ns*/
@@ -40,8 +29,8 @@ export async function main(ns) {
   }
 
   let customServers = [];
-  let playerHackLevel = ns.getHackingLevel();
-  let hasHackingProgramCount = checkForHackingPrograms(ns);
+  let playerHackLevel = 1;
+  let hasHackingProgramCount = 0;
   let freq = args.freq * 60 * 1000; // in milliseconds
 
   while (true) {
