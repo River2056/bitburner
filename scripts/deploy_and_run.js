@@ -1,5 +1,5 @@
 import { openPorts, nuke, exec } from "./utils";
-import { HOME, MINER, CUSTOM_SERVER } from "./constants";
+import { HOME, MINER, CUSTOM_SERVER, HACKNET_SERVER } from "./constants";
 
 /** @param {import(".").NS} ns */
 export function deployAndRun(node, ns, moneyThresh, securityThresh) {
@@ -13,7 +13,7 @@ export function deployAndRun(node, ns, moneyThresh, securityThresh) {
 
   while (queue.length > 0) {
     const host = queue.shift();
-    if (host.startsWith(CUSTOM_SERVER))
+    if (host.startsWith(CUSTOM_SERVER) || host.startsWith(HACKNET_SERVER))
       continue;
     ns.rm(MINER, host);
     if (!ns.scp(MINER, host, HOME)) {

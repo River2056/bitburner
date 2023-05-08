@@ -257,3 +257,23 @@ export function formatDate(currentTime) {
 export function formatDateTime(currentTime) {
   return `${formatDate(currentTime)} --- ${formatTime(currentTime)}`;
 }
+
+/**
+  * @param {string} targetName
+  * @returns {string}
+  * */
+export function hacknetHashTarget(targetName) {
+  const hashTargets = {
+    money: "Sell for Money",
+    corpFund: "Sell for Corporation Funds",
+    reduceSec: "Reduce Minimum Security",
+    increaseMoney: "Increase Maximum Money",
+    improveStudy: "Improve Studying",
+    improveGym: "Improve Gym Training",
+    exchangeCorpResearch: "Exchange for Corporation Research",
+    exchangeBladerunner: "Exchange for Bladeburner Rank",
+    exchangeBladerunnersp: "Exchange for Bladeburner SP",
+    generateCodingContract: "Generate Coding Contract"
+  }
+  return hashTargets[targetName];
+}

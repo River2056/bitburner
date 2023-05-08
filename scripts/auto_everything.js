@@ -69,6 +69,10 @@ export async function main(ns) {
       ns.print(`SUCCESS rerun deploy_and_run.js...`);
       ns.run("deploy_and_run.js");
       ns.print(formatDateTime(date));
+
+      ns.print("attempt to install backdoor on servers...");
+      ns.run("connect_and_install_backdoor.js");
+      ns.print(`SUCCESS finished installing backdoors on all servers`);
     }
     playerHackLevel = currentPlayerLevel;
     hasHackingProgramCount = currentHackingProgramsCount;

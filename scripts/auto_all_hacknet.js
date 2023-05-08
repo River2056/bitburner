@@ -5,4 +5,5 @@ export async function main(ns) {
   ns.run("hacknet.js", 1, "--mode", "level", "--pct", args.pct);
   ns.run("hacknet.js", 1, "--mode", "ram", "--pct", args.pct);
   ns.run("hacknet.js", 1, "--mode", "cores", "--pct", args.pct);
+  ns.run("hacknet.js", 1, "--mode", "cache", "--pct", args.pct);
 }

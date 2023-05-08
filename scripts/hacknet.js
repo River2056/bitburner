@@ -20,6 +20,7 @@ const hacknet = async (mode, pct, costFunction, purchaseFunction, ns) => {
     case "level":
     case "ram":
     case "cores":
+    case "cache":
       nodesOwned = numNodes();
       for (let i = 0; i < nodesOwned; i++) {
         while (getPlayer().money * (pct / 100) > costFunction(i, 1)) {
@@ -40,6 +41,9 @@ const hacknet = async (mode, pct, costFunction, purchaseFunction, ns) => {
   print(`current player money: ${ns.getPlayer().money}`);
 };
 
+/**
+ *  @param {import(".").NS} ns
+ * */
 const getFunctions = (mode, ns) => {
   const functionSets = {
     node: {
@@ -57,6 +61,10 @@ const getFunctions = (mode, ns) => {
     cores: {
       cost: ns.hacknet.getCoreUpgradeCost,
       purchase: ns.hacknet.upgradeCore,
+    },
+    cache: {
+      cost: ns.hacknet.getCacheUpgradeCost,
+      purchase: ns.hacknet.upgradeCache,
     },
   };
 
