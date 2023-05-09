@@ -21,6 +21,7 @@ export async function main(ns) {
   }
 
   const TYPE = hacknetHashTarget("money");
+
   while (true) {
     const totalHashes = ns.hacknet.numHashes();
     const moneyCostHash = ns.hacknet.hashCost(TYPE);
