@@ -5,11 +5,11 @@ import { HOME } from "./constants";
 export async function main(ns) {
   ns.disableLog("sleep");
   const args = ns.flags([
-    ["money", false],
+    ["type", "money"],
     ["loop", false],
   ]);
 
-  if (!args || !args.money) {
+  if (!args) {
     ns.tprintf("money argument not specified, aborting...");
     ns.tprintf(
       "specifiy argument money to spend all hashes in exchange for maximum money"
@@ -20,7 +20,7 @@ export async function main(ns) {
     return;
   }
 
-  const TYPE = hacknetHashTarget("money");
+  const TYPE = hacknetHashTarget(args.type);
 
   while (true) {
     const totalHashes = ns.hacknet.numHashes();
@@ -31,7 +31,7 @@ export async function main(ns) {
         HOME,
         Math.floor(totalHashes / moneyCostHash)
       );
-      const msg = `SUCCESS succeded in exchanging all hashes for money: $${
+      const msg = `SUCCESS succeded in exchanging all hashes for ${TYPE}: $${
         Math.floor(totalHashes / moneyCostHash) * 1000000
       }`;
       if (purchaseResult) {
