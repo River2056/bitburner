@@ -96,7 +96,10 @@ export async function main(ns) {
       )
         ns.run("auto_everything.js");
 
-      if (ns.ps(HOME).length > 8) {
+      if (ns.getRunningScript("spend_hashes.js", HOME, "--type", "corpFund", "--loop", "true") == null && getAvailableRam(ns, HOME) > ns.getScriptRam("spend_hashes.js"))
+        ns.run("spend_hashes.js", 1, "--type", "corpFund", "--loop", "true");
+
+      if (ns.ps(HOME).length > 9) {
         ns.tprint(`SUCCESS running all essential scripts`);
         return;
       }
