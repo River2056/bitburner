@@ -50,7 +50,7 @@ export async function main(ns) {
         ns.run("hacknet.js", 1, "--mode", "level", "--pct", 50);
       if (
         ns.getRunningScript("hacknet.js", HOME, "--mode", "ram", "--pct", 50) ==
-          null &&
+        null &&
         getAvailableRam(ns, HOME) > hacknetScriptRam
       )
         ns.run("hacknet.js", 1, "--mode", "ram", "--pct", 50);
@@ -99,7 +99,10 @@ export async function main(ns) {
       if (ns.getRunningScript("spend_hashes.js", HOME, "--type", "corpFund", "--loop", "true") == null && getAvailableRam(ns, HOME) > ns.getScriptRam("spend_hashes.js"))
         ns.run("spend_hashes.js", 1, "--type", "corpFund", "--loop", "true");
 
-      if (ns.ps(HOME).length > 9) {
+      if (ns.getRunningScript("spend_hashes.js", HOME, "--type", "money", "--loop", "true") == null && getAvailableRam(ns, HOME) > ns.getScriptRam("spend_hashes.js"))
+        ns.run("spend_hashes.js", 1, "--type", "money", "--loop", "true");
+
+      if (ns.ps(HOME).length > 10) {
         ns.tprint(`SUCCESS running all essential scripts`);
         return;
       }
