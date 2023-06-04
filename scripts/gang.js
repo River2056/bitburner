@@ -28,7 +28,7 @@ function assignMemberTasks(ns) {
   const tasks = ns.gang.getTaskNames();
   let count = 0;
 
-  if (ns.gang.getGangInformation().wantedPenalty < 0.8) {
+  if (ns.gang.getGangInformation().wantedPenalty < 0.5) {
     members.forEach(m => ns.gang.setMemberTask(m, tasks.filter(t => t.toLowerCase().startsWith("ethical"))[0]));
     return;
   }

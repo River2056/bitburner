@@ -27,8 +27,8 @@ function hireEmployee(ns) {
     * @param {string} city
     * @param {number} employeesCount
     * */
-  const hire = (ns, division, city, employeesCount = 0) => {
-    count = employeesCount;
+  const hire = (ns, division, city) => {
+    count = ns.corporation.getOffice(division, city).employees || 0;
     if (count % 5 === 0)
       ns.corporation.hireEmployee(division, city, "Engineer");
     else if (count % 3 === 0 && ns.corporation.getDivision(division).products.length > 0)
@@ -65,7 +65,7 @@ async function manageCorporation(ns) {
       CITIES.forEach(city => {
         try {
           ns.corporation.upgradeOfficeSize(division, city, 3);
-          hire(ns, division, city, ns.corporation.getOffice(division, city).employees);
+          hire(ns, division, city);
         } catch (error) {
           ns.printf(`${division} has not expanded to ${city} yet`);
         }
