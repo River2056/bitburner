@@ -93,7 +93,6 @@ async function manageGang(ns) {
 /** @param {import(".").NS} ns */
 function test(ns) {
   ns.tprint(ns.gang.getGangInformation());
-  ns.gang.getGangInformation().wantedPenalty = 0;
 }
 
 /** @param {import(".").NS} ns*/
