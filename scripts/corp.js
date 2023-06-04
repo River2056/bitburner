@@ -28,7 +28,6 @@ function hireEmployee(ns) {
     * @param {number} employeesCount
     * */
   const hire = (ns, division, city) => {
-    count = ns.corporation.getOffice(division, city).employees || 0;
     if (count % 5 === 0)
       ns.corporation.hireEmployee(division, city, "Engineer");
     else if (count % 3 === 0 && ns.corporation.getDivision(division).products.length > 0)
@@ -45,8 +44,8 @@ function hireEmployee(ns) {
 }
 
 /** @param {import(".").NS} ns*/
-function upgradeOffice(ns, division, city) {
-  ns.corporation.upgradeOfficeSize(division, city, 3);
+function upgradeWarehouse(ns, division, city) {
+  ns.tprint();
 }
 
 /** @param {import(".").NS} ns*/
@@ -64,6 +63,7 @@ async function manageCorporation(ns) {
     corporation.divisions.forEach(division => {
       CITIES.forEach(city => {
         try {
+          ns.corporation.upgradeWarehouse(division, city);
           ns.corporation.upgradeOfficeSize(division, city, 3);
           hire(ns, division, city);
         } catch (error) {
