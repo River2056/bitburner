@@ -27,13 +27,23 @@ function assignMemberTasks(ns) {
   const members = ns.gang.getMemberNames();
   const tasks = ns.gang.getTaskNames();
   let count = 0;
+
+  if (ns.gang.getGangInformation().wantedPenalty < 0.8) {
+    members.forEach(m => ns.gang.setMemberTask(m, tasks.filter(t => t.toLowerCase().startsWith("ethical"))[0]));
+    return;
+  }
+
   members.forEach(m => {
-    if (count % 3 === 0)
-      ns.gang.setMemberTask(m, tasks.filter(t => t.startsWith("Money"))[0])
+    if (count % 3 === 0) {
+      if (ns.gang.getMemberInformation(m).hack < 500)
+        ns.gang.setMemberTask(m, tasks.filter(t => t.toLowerCase().startsWith("ransomware"))[0])
+      else
+        ns.gang.setMemberTask(m, tasks.filter(t => t.toLowerCase().startsWith("money"))[0])
+    }
     else if (count % 5 === 0)
-      ns.gang.setMemberTask(m, tasks.filter(t => t.startsWith("Identity"))[0])
+      ns.gang.setMemberTask(m, tasks.filter(t => t.toLowerCase().startsWith("identity"))[0])
     else
-      ns.gang.setMemberTask(m, tasks.filter(t => t.startsWith("Ethical"))[0])
+      ns.gang.setMemberTask(m, tasks.filter(t => t.toLowerCase().startsWith("ethical"))[0])
     count++;
   });
 }
@@ -80,12 +90,18 @@ async function manageGang(ns) {
   }
 }
 
+/** @param {import(".").NS} ns */
+function test(ns) {
+  ns.tprint(ns.gang.getGangInformation());
+  ns.gang.getGangInformation().wantedPenalty = 0;
+}
+
 /** @param {import(".").NS} ns*/
 export async function main(ns) {
   const args = ns.flags([
     ["task", ""],
   ])
-  
+
   if (args && args.task) {
     ns.gang.getMemberNames().forEach(m => {
       ns.gang.setMemberTask(m, ns.gang.getTaskNames().filter(t => t.toLowerCase().startsWith(args.task))[0]);
@@ -94,5 +110,6 @@ export async function main(ns) {
   }
 
   await manageGang(ns);
+  // test(ns);
 }
 
