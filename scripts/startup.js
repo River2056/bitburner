@@ -5,109 +5,78 @@ export function getAvailableRam(ns, host) {
   return ns.getServerMaxRam(host) - ns.getServerUsedRam(host);
 }
 
+/**
+ * @param {import(".").NS} ns
+ * @param {number} count
+ * */
+export function runScript(ns, scriptName, ...args) {
+  if (
+    ns.getRunningScript(scriptName, HOME, ...args) === null &&
+    getAvailableRam(ns, HOME) > ns.getScriptRam(scriptName)
+  ) {
+    ns.run(scriptName, 1, ...args);
+  }
+  return 1;
+}
+
 /** @param {import(".").NS} ns*/
 export async function main(ns) {
-  const serversScriptRam = ns.getScriptRam("servers.js");
-  const hacknetScriptRam = ns.getScriptRam("hacknet.js");
-  const autoEverythingScriptRam = ns.getScriptRam("auto_everything.js");
-  const totalRamCost =
-    serversScriptRam * 2 + hacknetScriptRam * 4 + autoEverythingScriptRam;
-  ns.tprint(
-    serversScriptRam * 2 + hacknetScriptRam * 4 + autoEverythingScriptRam
-  );
+  while (true) {
+    let count = 0;
+    count += runScript(ns, "hacknet.js", "--mode", "node", "--pct", 50);
+    count += runScript(ns, "hacknet.js", "--mode", "level", "--pct", 50);
+    count += runScript(ns, "hacknet.js", "--mode", "ram", "--pct", 50);
+    count += runScript(ns, "hacknet.js", "--mode", "cores", "--pct", 50);
+    count += runScript(ns, "hacknet.js", "--mode", "cache", "--pct", 50);
 
-  if (ns.getServerMaxRam(HOME) > totalRamCost + 10) {
-    ns.run("auto_all_hacknet.js");
-    ns.run("servers.js", 1, "--mode", "server");
-    ns.run("servers.js", 1, "--mode", "ram");
-    ns.run("auto_everything.js");
-    ns.tprint(`SUCCESS rerun all essential scripts!`);
-  } else {
-    while (true) {
-      if (
-        ns.getRunningScript(
-          "hacknet.js",
-          HOME,
-          "--mode",
-          "node",
-          "--pct",
-          50
-        ) == null &&
-        getAvailableRam(ns, HOME) > hacknetScriptRam
-      )
-        ns.run("hacknet.js", 1, "--mode", "node", "--pct", 50);
-      if (
-        ns.getRunningScript(
-          "hacknet.js",
-          HOME,
-          "--mode",
-          "level",
-          "--pct",
-          50
-        ) == null &&
-        getAvailableRam(ns, HOME) > hacknetScriptRam
-      )
-        ns.run("hacknet.js", 1, "--mode", "level", "--pct", 50);
-      if (
-        ns.getRunningScript("hacknet.js", HOME, "--mode", "ram", "--pct", 50) ==
-        null &&
-        getAvailableRam(ns, HOME) > hacknetScriptRam
-      )
-        ns.run("hacknet.js", 1, "--mode", "ram", "--pct", 50);
-      if (
-        ns.getRunningScript(
-          "hacknet.js",
-          HOME,
-          "--mode",
-          "cores",
-          "--pct",
-          50
-        ) == null &&
-        getAvailableRam(ns, HOME) > hacknetScriptRam
-      )
-        ns.run("hacknet.js", 1, "--mode", "cores", "--pct", 50);
-      if (
-        ns.getRunningScript(
-          "hacknet.js",
-          HOME,
-          "--mode",
-          "cache",
-          "--pct",
-          50
-        ) == null &&
-        getAvailableRam(ns, HOME) > hacknetScriptRam
-      )
-        ns.run("hacknet.js", 1, "--mode", "cache", "--pct", 50);
+    count += runScript(ns, "servers.js", "--mode", "ram");
+    count += runScript(ns, "servers.js", "--mode", "server");
 
-      if (
-        ns.getRunningScript("servers.js", HOME, "--mode", "ram") == null &&
-        getAvailableRam(ns, HOME) > serversScriptRam
-      )
-        ns.run("servers.js", 1, "--mode", "ram");
-      if (
-        ns.getRunningScript("servers.js", HOME, "--mode", "server") == null &&
-        getAvailableRam(ns, HOME) > serversScriptRam
-      )
-        ns.run("servers.js", 1, "--mode", "server");
+    count += runScript(ns, "auto_everything.js");
 
-      if (
-        ns.getRunningScript("auto_everything.js") == null &&
-        getAvailableRam(ns, HOME) > serversScriptRam
-      )
-        ns.run("auto_everything.js");
+    count += runScript(
+      ns,
+      "spend_hashes.js",
+      "--type",
+      "corpFund",
+      "--loop",
+      "true"
+    );
+    count += runScript(
+      ns,
+      "spend_hashes.js",
+      "--type",
+      "money",
+      "--loop",
+      "true"
+    );
+    count += runScript(
+      ns,
+      "spend_hashes.js",
+      "--type",
+      "improveStudy",
+      "--loop",
+      "true"
+    );
+    count += runScript(
+      ns,
+      "spend_hashes.js",
+      "--type",
+      "exchangeCorpResearch",
+      "--loop",
+      "true"
+    );
 
-      if (ns.getRunningScript("spend_hashes.js", HOME, "--type", "corpFund", "--loop", "true") == null && getAvailableRam(ns, HOME) > ns.getScriptRam("spend_hashes.js"))
-        ns.run("spend_hashes.js", 1, "--type", "corpFund", "--loop", "true");
+    count += runScript(ns, "gang.js");
+    count += runScript(ns, "corp.js");
 
-      if (ns.getRunningScript("spend_hashes.js", HOME, "--type", "money", "--loop", "true") == null && getAvailableRam(ns, HOME) > ns.getScriptRam("spend_hashes.js"))
-        ns.run("spend_hashes.js", 1, "--type", "money", "--loop", "true");
+    ns.tprint(`count: ${count}`);
 
-      if (ns.ps(HOME).length > 10) {
-        ns.tprint(`SUCCESS running all essential scripts`);
-        return;
-      }
-
-      await ns.sleep(1000);
+    if (ns.ps(HOME).length > count) {
+      ns.tprint(`SUCCESS running all essential scripts`);
+      return;
     }
+
+    await ns.sleep(1000);
   }
 }

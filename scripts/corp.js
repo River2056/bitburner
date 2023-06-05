@@ -1,11 +1,26 @@
-const CITIES = ["Aevum", "Chongqing", "Sector-12", "New Tokyo", "Ishima", "Volhaven"]
-const JOBS = {"Operations":0,"Engineer":0,"Business":0,"Management":0,"Research & Development":0,"Intern":0,"Unassigned":0}
+const CITIES = [
+  "Aevum",
+  "Chongqing",
+  "Sector-12",
+  "New Tokyo",
+  "Ishima",
+  "Volhaven",
+];
+const JOBS = {
+  Operations: 0,
+  Engineer: 0,
+  Business: 0,
+  Management: 0,
+  "Research & Development": 0,
+  Intern: 0,
+  Unassigned: 0,
+};
 
 /** @param {import(".").NS} ns*/
 function checkDivisionStats(ns) {
   const corp = ns.corporation.getCorporation();
-  corp.divisions.forEach(division => {
-    CITIES.forEach(city => {
+  corp.divisions.forEach((division) => {
+    CITIES.forEach((city) => {
       try {
         ns.tprint(ns.corporation.getOffice(division, city));
       } catch (error) {
@@ -15,37 +30,53 @@ function checkDivisionStats(ns) {
   });
 }
 
-/** 
-  * @param {import(".").NS} ns
-  * */
+/**
+ * @param {import(".").NS} ns
+ * */
 function hireEmployee(ns) {
   let count = 0;
 
-  /** 
-    * @param {import(".").NS} ns
-    * @param {string} division
-    * @param {string} city
-    * @param {number} employeesCount
-    * */
+  /**
+   * @param {import(".").NS} ns
+   * @param {string} division
+   * @param {string} city
+   * @param {number} employeesCount
+   * */
   const hire = (ns, division, city) => {
     if (count % 5 === 0)
       ns.corporation.hireEmployee(division, city, "Engineer");
-    else if (count % 3 === 0 && ns.corporation.getDivision(division).products.length > 0)
+    else if (
+      count % 3 === 0 &&
+      ns.corporation.getDivision(division).products.length > 0
+    )
       ns.corporation.hireEmployee(division, city, "Business");
     else if (count % 50 === 0)
       ns.corporation.hireEmployee(division, city, "Management");
-    else
-      ns.corporation.hireEmployee(division, city, "Operations");
+    else ns.corporation.hireEmployee(division, city, "Operations");
 
     count++;
-  }
+  };
 
   return hire;
 }
 
 /** @param {import(".").NS} ns*/
 function upgradeWarehouse(ns, division, city) {
-  ns.tprint();
+  if (!ns.corporation.hasWarehouse(division, city)) {
+    ns.corporation.purchaseWarehouse(division, city);
+  }
+
+  const warehouse = ns.corporation.getWarehouse(division, city);
+  if (warehouse.size - warehouse.sizeUsed < 500)
+    ns.corporation.upgradeWarehouse(division, city);
+}
+
+/** @param {import(".").NS} ns*/
+function levelCorporationUpgrades(ns) {
+  const constants = ns.corporation.getConstants();
+  constants.upgradeNames.forEach(corpUpgradeName => {
+    ns.corporation.levelUpgrade(corpUpgradeName);
+  });
 }
 
 /** @param {import(".").NS} ns*/
@@ -57,15 +88,16 @@ async function manageCorporation(ns) {
   }
 
   let hire = hireEmployee(ns);
-  
+
   while (true) {
     let corporation = ns.corporation.getCorporation();
-    corporation.divisions.forEach(division => {
-      CITIES.forEach(city => {
+    corporation.divisions.forEach((division) => {
+      CITIES.forEach((city) => {
         try {
-          ns.corporation.upgradeWarehouse(division, city);
+          upgradeWarehouse(ns, division, city);
           ns.corporation.upgradeOfficeSize(division, city, 3);
           hire(ns, division, city);
+          levelCorporationUpgrades(ns);
         } catch (error) {
           ns.printf(`${division} has not expanded to ${city} yet`);
         }
