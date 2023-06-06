@@ -1,11 +1,9 @@
 /**
-  * @param {import(".").NS} ns
-  * */
+ * @param {import(".").NS} ns
+ * */
 function createAndJoinGang(ns, gangName) {
-  if (!ns.gang.inGang())
-    ns.gang.createGang(gangName);
-  else
-    return;
+  if (!ns.gang.inGang()) ns.gang.createGang(gangName);
+  else return;
 }
 
 /** @param {import(".").NS} ns */
@@ -17,7 +15,7 @@ function recruitMemberClosure(ns) {
       return ns.gang.recruitMember(`ab${count++}`);
     }
     return null;
-  }
+  };
 
   return recruit;
 }
@@ -29,51 +27,87 @@ function assignMemberTasks(ns) {
   let count = 0;
 
   if (ns.gang.getGangInformation().wantedPenalty < 0.5) {
-    members.forEach(m => ns.gang.setMemberTask(m, tasks.filter(t => t.toLowerCase().startsWith("ethical"))[0]));
+    members.forEach((m) =>
+      ns.gang.setMemberTask(
+        m,
+        tasks.filter((t) => t.toLowerCase().startsWith("ethical"))[0]
+      )
+    );
     return;
   }
 
-  members.forEach(m => {
+  members.forEach((m) => {
     if (count % 3 === 0) {
       if (ns.gang.getMemberInformation(m).hack < 500)
-        ns.gang.setMemberTask(m, tasks.filter(t => t.toLowerCase().startsWith("ransomware"))[0])
+        ns.gang.setMemberTask(
+          m,
+          tasks.filter((t) => t.toLowerCase().startsWith("ransomware"))[0]
+        );
       else
-        ns.gang.setMemberTask(m, tasks.filter(t => t.toLowerCase().startsWith("money"))[0])
-    }
-    else if (count % 5 === 0)
-      ns.gang.setMemberTask(m, tasks.filter(t => t.toLowerCase().startsWith("identity"))[0])
+        ns.gang.setMemberTask(
+          m,
+          tasks.filter((t) => t.toLowerCase().startsWith("money"))[0]
+        );
+    } else if (count % 5 === 0)
+      ns.gang.setMemberTask(
+        m,
+        tasks.filter((t) => t.toLowerCase().startsWith("identity"))[0]
+      );
     else
-      ns.gang.setMemberTask(m, tasks.filter(t => t.toLowerCase().startsWith("ethical"))[0])
+      ns.gang.setMemberTask(
+        m,
+        tasks.filter((t) => t.toLowerCase().startsWith("ethical"))[0]
+      );
     count++;
   });
 }
 
 /** @param {import(".").NS} ns */
 function ascendMembers(ns) {
-  ns.gang.getMemberNames().forEach(m => ns.gang.ascendMember(m));
+  ns.gang.getMemberNames().forEach((m) => ns.gang.ascendMember(m));
 }
 
 /** @param {import(".").NS} ns */
 function getEquipments(ns) {
-  const priorityEquipments = ["NUKE Rootkit", "Soulstealer Rootkit", "Demon Rootkit", "Hmap Node", "Jack the Ripper", "Bionic Arms", "Bionic Legs", "Bionic Spine", "BrachiBlades", "Nanofiber Weave", "Synthetic Heart", "Synfibril Muscle", "BitWire", "Neuralstimulator", "DataJack", "Graphene Bone Lacings"];
+  const priorityEquipments = [
+    "NUKE Rootkit",
+    "Soulstealer Rootkit",
+    "Demon Rootkit",
+    "Hmap Node",
+    "Jack the Ripper",
+    "Bionic Arms",
+    "Bionic Legs",
+    "Bionic Spine",
+    "BrachiBlades",
+    "Nanofiber Weave",
+    "Synthetic Heart",
+    "Synfibril Muscle",
+    "BitWire",
+    "Neuralstimulator",
+    "DataJack",
+    "Graphene Bone Lacings",
+  ];
   const members = ns.gang.getMemberNames();
-  members.forEach(m => {
-    priorityEquipments.forEach(eq => {
+  members.forEach((m) => {
+    priorityEquipments.forEach((eq) => {
       ns.gang.purchaseEquipment(m, eq);
     });
   });
 
-  members.forEach(m => {
-    ns.gang.getEquipmentNames().filter(eq => !priorityEquipments.includes(eq)).forEach(eq => {
-      ns.gang.purchaseEquipment(m, eq);
-    });
-  })
+  members.forEach((m) => {
+    ns.gang
+      .getEquipmentNames()
+      .filter((eq) => !priorityEquipments.includes(eq))
+      .forEach((eq) => {
+        ns.gang.purchaseEquipment(m, eq);
+      });
+  });
 }
 
 /** @param {import(".").NS} ns */
 async function manageGang(ns) {
   ns.disableLog("sleep");
-  const ascendWait = 60 * 60;
+  const ascendWait = 60 * 2;
   createAndJoinGang(ns, "NiteSec");
   const recruitMember = recruitMemberClosure();
   let counter = 0;
@@ -97,13 +131,16 @@ function test(ns) {
 
 /** @param {import(".").NS} ns*/
 export async function main(ns) {
-  const args = ns.flags([
-    ["task", ""],
-  ])
+  const args = ns.flags([["task", ""]]);
 
   if (args && args.task) {
-    ns.gang.getMemberNames().forEach(m => {
-      ns.gang.setMemberTask(m, ns.gang.getTaskNames().filter(t => t.toLowerCase().startsWith(args.task))[0]);
+    ns.gang.getMemberNames().forEach((m) => {
+      ns.gang.setMemberTask(
+        m,
+        ns.gang
+          .getTaskNames()
+          .filter((t) => t.toLowerCase().startsWith(args.task))[0]
+      );
     });
     return;
   }
@@ -111,4 +148,3 @@ export async function main(ns) {
   await manageGang(ns);
   // test(ns);
 }
-

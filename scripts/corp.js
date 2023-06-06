@@ -108,7 +108,13 @@ function redistributeEmployees(ns, division, city) {
     "Research & Development",
     0
   );
-  const hasProduct = ns.corporation.getDivision(division).products.length > 0;
+  const products = ns.corporation.getDivision(division).products;
+  const hasFullyDeveloped = products.filter(
+    (product) =>
+      ns.corporation.getProduct(division, city, product).developmentProgress >=
+      100
+  );
+  const hasProduct = hasFullyDeveloped.length > 0;
   const operations = Math.ceil(employees / 5);
   const business = hasProduct
     ? Math.ceil(employees / 2)
@@ -165,8 +171,15 @@ function manageProducts(ns, division, city) {
       if (
         ns.corporation.getProduct(division, city, product)
           .developmentProgress >= 100
-      )
+      ) {
         ns.corporation.sellProduct(division, city, product, "MAX", "MP", true);
+        try {
+          ns.corporation.setProductMarketTA1(division, product, true);
+          ns.corporation.setProductMarketTA2(division, product, true);
+        } catch (error) {
+          ns.print(`no market ta available`);
+        }
+      }
     });
   }
 
@@ -185,6 +198,28 @@ function manageProducts(ns, division, city) {
   } catch (error) {
     ns.print(`already reach maximum products! ${products.length}`);
   }
+}
+
+/** @param {import(".").NS} ns*/
+function expandCities(ns, division) {
+  const citiesOfDivision = ns.corporation.getDivision(division).cities;
+  if (citiesOfDivision.length < CITIES.length) {
+    const citiesNotExpanded = CITIES.filter(
+      (city) => !citiesOfDivision.includes(city)
+    );
+    citiesNotExpanded.forEach((city) => {
+      ns.corporation.expandCity(division, city);
+    });
+  }
+}
+
+/** @param {import(".").NS} ns*/
+function hireAdvert(ns, division) {
+  if (
+    ns.corporation.getCorporation().funds >
+    ns.corporation.getHireAdVertCost(division)
+  )
+    ns.corporation.hireAdVert(division);
 }
 
 /** @param {import(".").NS} ns*/
@@ -211,8 +246,10 @@ async function manageCorporation(ns) {
           if (counter % 10 === 0) redistributeEmployees(ns, division, city);
           manageProducts(ns, division, city);
           ns.corporation.setSmartSupply(division, city, true);
+          expandCities(ns, division);
+          hireAdvert(ns, division);
         } catch (error) {
-          ns.tprint(`error occurred: ${error}`);
+          // ns.tprint(`error occurred: ${error}`);
           ns.printf(`${division} has not expanded to ${city} yet`);
         }
       });
