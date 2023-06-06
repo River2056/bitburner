@@ -74,9 +74,80 @@ function upgradeWarehouse(ns, division, city) {
 /** @param {import(".").NS} ns*/
 function levelCorporationUpgrades(ns) {
   const constants = ns.corporation.getConstants();
-  constants.upgradeNames.forEach(corpUpgradeName => {
-    ns.corporation.levelUpgrade(corpUpgradeName);
+  const upgradeables = constants.upgradeNames.map((corpUpgradeName) => {
+    const obj = {};
+    obj[corpUpgradeName] = ns.corporation.getUpgradeLevel(corpUpgradeName);
+    return obj;
   });
+  const entries = Object.entries(upgradeables);
+
+  entries.sort((a, b) => Object.values(a[1])[0] - Object.values(b[1])[0]);
+  entries.forEach((corpUpgradeNameObj) => {
+    const upgradeName = Object.keys(corpUpgradeNameObj[1])[0];
+    if (
+      ns.corporation.getCorporation().funds >
+      ns.corporation.getUpgradeLevelCost(upgradeName)
+    )
+      ns.corporation.levelUpgrade(upgradeName);
+  });
+}
+
+/** @param {import(".").NS} ns*/
+function redistributeEmployees(ns, division, city) {
+  const office = ns.corporation.getOffice(division, city);
+  const employees = office.numEmployees;
+
+  const hasProduct = ns.corporation.getDivision(division).products.length > 0;
+  const operations = Math.ceil(employees / 5);
+  const business = hasProduct
+    ? Math.ceil(employees / 5)
+    : Math.ceil(employees / 10);
+  const management = hasProduct
+    ? Math.ceil(employees / 20)
+    : Math.ceil(employees / 50);
+  const researchAndDevelopment = hasProduct ? Math.ceil(employees / 100) : 0;
+  const engineer =
+    employees - (operations + business + management + researchAndDevelopment);
+
+  /* ns.tprint(`operations: ${operations}`);
+  ns.tprint(`engineer: ${engineer}`);
+  ns.tprint(`business: ${business}`);
+  ns.tprint(`management: ${management}`);
+  ns.tprint(`researchAndDevelopment: ${researchAndDevelopment}`); */
+  ns.corporation.setAutoJobAssignment(division, city, "Intern", 0);
+  ns.corporation.setAutoJobAssignment(division, city, "Unassigned", 0);
+  ns.corporation.setAutoJobAssignment(division, city, "Operations", operations);
+  ns.corporation.setAutoJobAssignment(division, city, "Engineer", engineer);
+  ns.corporation.setAutoJobAssignment(division, city, "Business", business);
+  ns.corporation.setAutoJobAssignment(division, city, "Management", management);
+  ns.corporation.setAutoJobAssignment(
+    division,
+    city,
+    "Research & Development",
+    researchAndDevelopment
+  );
+
+  const remainingJobs = ns.corporation.getOffice(division, city).employeeJobs;
+  if (remainingJobs["Intern"] > 0 || remainingJobs["Unassigned"] > 0) {
+    if (hasProduct)
+      ns.corporation.setAutoJobAssignment(
+        division,
+        city,
+        "Business",
+        remainingJobs["Business"] +
+          remainingJobs["Intern"] +
+          remainingJobs["Unassigned"]
+      );
+    else
+      ns.corporation.setAutoJobAssignment(
+        division,
+        city,
+        "Operations",
+        remainingJobs["Operations"] +
+          remainingJobs["Intern"] +
+          remainingJobs["Unassigned"]
+      );
+  }
 }
 
 /** @param {import(".").NS} ns*/
@@ -88,6 +159,7 @@ async function manageCorporation(ns) {
   }
 
   let hire = hireEmployee(ns);
+  let counter = 0;
 
   while (true) {
     let corporation = ns.corporation.getCorporation();
@@ -98,12 +170,15 @@ async function manageCorporation(ns) {
           ns.corporation.upgradeOfficeSize(division, city, 3);
           hire(ns, division, city);
           levelCorporationUpgrades(ns);
+          redistributeEmployees(ns, division, city);
         } catch (error) {
+          // ns.tprint(`error occurred: ${error}`);
           ns.printf(`${division} has not expanded to ${city} yet`);
         }
       });
     });
     await ns.sleep(1000);
+    counter++;
   }
 }
 
