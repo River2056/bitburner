@@ -9,17 +9,14 @@ function levelCorporationUpgrades(ns) {
 }
 
 /** @param {import(".").NS} ns*/
-export async function main(ns) {
-  ns.tprint(ns.corporation.getOffice("Harbour", "Aevum"));
-  ns.tprint(ns.corporation.getOffice("Harbour", "Aevum").numEmployees);
-  ns.tprint(ns.corporation.getOffice("Harbour", "Aevum").size);
-  ns.tprint(ns.corporation.getOffice("Harbour", "Aevum").employeeJobs);
+function purchaseUnlocks(ns) {
+  const constants = ns.corporation.getConstants();
+  constants.unlockNames.forEach((unlock) => {
+    ns.tprint(unlock);
+  });
+}
 
-  /* const office = ns.corporation.getOffice("Seven Stars", "Sector-12");
-  const employees = office.employeeJobs;
-  const totalEmployees = Object.entries(employees).reduce(
-    (a, b) => a + b[1],
-    0
-  );
-  ns.tprint(`totalEmployees: ${totalEmployees}`); */
+/** @param {import(".").NS} ns*/
+export async function main(ns) {
+  purchaseUnlocks(ns);
 }

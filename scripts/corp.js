@@ -223,6 +223,15 @@ function hireAdvert(ns, division) {
 }
 
 /** @param {import(".").NS} ns*/
+function purchaseUnlocks(ns) {
+  const constants = ns.corporation.getConstants();
+  constants.unlockNames.forEach(unlock => {
+    if (!ns.corporation.hasUnlock(unlock) && ns.corporation.getCorporation().funds > ns.corporation.getUnlockCost(unlock))
+      ns.corporation.purchaseUnlock(unlock);
+  })
+}
+
+/** @param {import(".").NS} ns*/
 async function manageCorporation(ns) {
   ns.disableLog("sleep");
   if (!ns.corporation.hasCorporation()) {
@@ -247,7 +256,10 @@ async function manageCorporation(ns) {
           manageProducts(ns, division, city);
           ns.corporation.setSmartSupply(division, city, true);
           expandCities(ns, division);
-          hireAdvert(ns, division);
+
+          if (counter % (60 * 60) === 0)
+            hireAdvert(ns, division);
+          purchaseUnlocks(ns);
         } catch (error) {
           // ns.tprint(`error occurred: ${error}`);
           ns.printf(`${division} has not expanded to ${city} yet`);
