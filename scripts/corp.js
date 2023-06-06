@@ -97,25 +97,31 @@ function redistributeEmployees(ns, division, city) {
   const office = ns.corporation.getOffice(division, city);
   const employees = office.numEmployees;
 
+  ns.corporation.setAutoJobAssignment(division, city, "Intern", 0);
+  ns.corporation.setAutoJobAssignment(division, city, "Operations", 0);
+  ns.corporation.setAutoJobAssignment(division, city, "Engineer", 0);
+  ns.corporation.setAutoJobAssignment(division, city, "Business", 0);
+  ns.corporation.setAutoJobAssignment(division, city, "Management", 0);
+  ns.corporation.setAutoJobAssignment(
+    division,
+    city,
+    "Research & Development",
+    0
+  );
   const hasProduct = ns.corporation.getDivision(division).products.length > 0;
   const operations = Math.ceil(employees / 5);
   const business = hasProduct
-    ? Math.ceil(employees / 5)
+    ? Math.ceil(employees / 2)
     : Math.ceil(employees / 10);
   const management = hasProduct
     ? Math.ceil(employees / 20)
     : Math.ceil(employees / 50);
   const researchAndDevelopment = hasProduct ? Math.ceil(employees / 100) : 0;
-  const engineer =
-    employees - (operations + business + management + researchAndDevelopment);
+  const engineer = hasProduct
+    ? Math.ceil(employees / 5)
+    : employees - (operations + business + management + researchAndDevelopment);
 
-  /* ns.tprint(`operations: ${operations}`);
-  ns.tprint(`engineer: ${engineer}`);
-  ns.tprint(`business: ${business}`);
-  ns.tprint(`management: ${management}`);
-  ns.tprint(`researchAndDevelopment: ${researchAndDevelopment}`); */
-  ns.corporation.setAutoJobAssignment(division, city, "Intern", 0);
-  ns.corporation.setAutoJobAssignment(division, city, "Unassigned", 0);
+  // ns.corporation.setAutoJobAssignment(division, city, "Unassigned", 0);
   ns.corporation.setAutoJobAssignment(division, city, "Operations", operations);
   ns.corporation.setAutoJobAssignment(division, city, "Engineer", engineer);
   ns.corporation.setAutoJobAssignment(division, city, "Business", business);
@@ -170,7 +176,8 @@ async function manageCorporation(ns) {
           ns.corporation.upgradeOfficeSize(division, city, 3);
           hire(ns, division, city);
           levelCorporationUpgrades(ns);
-          redistributeEmployees(ns, division, city);
+
+          if (counter % 10 === 0) redistributeEmployees(ns, division, city);
         } catch (error) {
           // ns.tprint(`error occurred: ${error}`);
           ns.printf(`${division} has not expanded to ${city} yet`);
