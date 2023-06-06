@@ -157,6 +157,37 @@ function redistributeEmployees(ns, division, city) {
 }
 
 /** @param {import(".").NS} ns*/
+function manageProducts(ns, division, city) {
+  const products = ns.corporation.getDivision(division).products;
+
+  if (products.length > 0) {
+    products.forEach((product) => {
+      if (
+        ns.corporation.getProduct(division, city, product)
+          .developmentProgress >= 100
+      )
+        ns.corporation.sellProduct(division, city, product, "MAX", "MP", true);
+    });
+  }
+
+  try {
+    if (ns.corporation.getDivision(division).makesProducts) {
+      const designBudget = (Math.floor(Math.random() * 5) + 1) * 1000000000;
+      const marketBudget = (Math.floor(Math.random() * 5) + 1) * 1000000000;
+      ns.corporation.makeProduct(
+        division,
+        city,
+        division + products.length + 1,
+        designBudget,
+        marketBudget
+      );
+    }
+  } catch (error) {
+    ns.print(`already reach maximum products! ${products.length}`);
+  }
+}
+
+/** @param {import(".").NS} ns*/
 async function manageCorporation(ns) {
   ns.disableLog("sleep");
   if (!ns.corporation.hasCorporation()) {
@@ -178,8 +209,10 @@ async function manageCorporation(ns) {
           levelCorporationUpgrades(ns);
 
           if (counter % 10 === 0) redistributeEmployees(ns, division, city);
+          manageProducts(ns, division, city);
+          ns.corporation.setSmartSupply(division, city, true);
         } catch (error) {
-          // ns.tprint(`error occurred: ${error}`);
+          ns.tprint(`error occurred: ${error}`);
           ns.printf(`${division} has not expanded to ${city} yet`);
         }
       });
