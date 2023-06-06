@@ -107,7 +107,7 @@ function getEquipments(ns) {
 /** @param {import(".").NS} ns */
 async function manageGang(ns) {
   ns.disableLog("sleep");
-  const ascendWait = 60 * 2;
+  const ascendWait = 60 * 30;
   createAndJoinGang(ns, "NiteSec");
   const recruitMember = recruitMemberClosure();
   let counter = 0;
