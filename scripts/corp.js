@@ -225,10 +225,14 @@ function hireAdvert(ns, division) {
 /** @param {import(".").NS} ns*/
 function purchaseUnlocks(ns) {
   const constants = ns.corporation.getConstants();
-  constants.unlockNames.forEach(unlock => {
-    if (!ns.corporation.hasUnlock(unlock) && ns.corporation.getCorporation().funds > ns.corporation.getUnlockCost(unlock))
+  constants.unlockNames.forEach((unlock) => {
+    if (
+      !ns.corporation.hasUnlock(unlock) &&
+      ns.corporation.getCorporation().funds >
+        ns.corporation.getUnlockCost(unlock)
+    )
       ns.corporation.purchaseUnlock(unlock);
-  })
+  });
 }
 
 /** @param {import(".").NS} ns*/
@@ -257,8 +261,7 @@ async function manageCorporation(ns) {
           ns.corporation.setSmartSupply(division, city, true);
           expandCities(ns, division);
 
-          if (counter % (60 * 60) === 0)
-            hireAdvert(ns, division);
+          if (counter % (60 * 60) === 0) hireAdvert(ns, division);
           purchaseUnlocks(ns);
         } catch (error) {
           // ns.tprint(`error occurred: ${error}`);
@@ -279,5 +282,52 @@ function test(ns) {
 /** @param {import(".").NS} ns*/
 export async function main(ns) {
   // checkDivisionStats(ns);
+  const args = ns.flags([
+    ["sellstock", false],
+    ["buystock", false],
+    ["amount", Math.ceil(ns.corporation.getCorporation().numShares / 2)],
+  ]);
+
+  if (args && args.sellstock) {
+    // const originalSharePrice = ns.corporation.getCorporation().sharePrice;
+    try {
+      if (ns.corporation.getCorporation().numShares > 0) {
+        const sharesToSell = parseInt(args.amount);
+        ns.corporation.sellShares(sharesToSell);
+        await ns.sleep(5 * 1000);
+        ns.tprint(`sold success`);
+      }
+    } catch (error) {
+      ns.tprint(
+        `sold unsuccessful, either not enough shares or sell shares on cooldown`
+      );
+      ns.tprint(error);
+    }
+    return;
+  }
+
+  if (args && args.buystock) {
+    try {
+      // if (ns.corporation.getCorporation().sharePrice < originalSharePrice) {
+      ns.tprint(`start buying back`);
+      const buyBackAmount = Math.floor(
+        ns.getPlayer().money / ns.corporation.getCorporation().sharePrice
+      );
+      ns.tprint(`buyBackAmount: ${buyBackAmount}`);
+      const notOwned =
+        ns.corporation.getCorporation().totalShares -
+        ns.corporation.getCorporation().numShares;
+      ns.tprint(`notOwned: ${notOwned}`);
+      ns.corporation.buyBackShares(
+        buyBackAmount > notOwned ? notOwned : buyBackAmount
+      );
+      // }
+    } catch (error) {
+      ns.tprint(`buy unsuccessful`);
+      ns.tprint(error);
+    }
+    return;
+  }
+
   await manageCorporation(ns);
 }
