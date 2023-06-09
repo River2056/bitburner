@@ -10,31 +10,6 @@ function purchaseTopMostAugmentation(index) {
   document.querySelector("body > div.jss19.MuiModal-root.css-8ndowl > div.MuiBackdrop-root.css-919eu4").click();
 }
 
-function corpUpgrade(times) {
-  for (let i = 0; i < times; i++) {
-    // Smart Factories
-    document.querySelector("#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div:nth-child(13) > div > div:nth-child(1) > div > button").click();
-    // Wilson Analytics
-    document.querySelector("#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div:nth-child(13) > div > div:nth-child(4) > div > button").click();
-    // Neural Accelerators
-    document.querySelector("#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div:nth-child(13) > div > div:nth-child(7) > div > button").click();
-    // Project Insight
-    document.querySelector("#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div:nth-child(13) > div > div:nth-child(10) > div > button").click();
-    // Smart Storage
-    document.querySelector("#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div:nth-child(13) > div > div:nth-child(2) > div > button").click();
-    // Nuoptimal Nootropic Injector Implants
-    document.querySelector("#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div:nth-child(13) > div > div:nth-child(5) > div > button").click();
-    // FocusWires
-    document.querySelector("#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div:nth-child(13) > div > div:nth-child(8) > div > button").click();
-    // DreamSense
-    document.querySelector("#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div:nth-child(13) > div > div:nth-child(3) > div > button").click();
-    // Speech Processor Implants
-    document.querySelector("#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div:nth-child(13) > div > div:nth-child(6) > div > button").click();
-    // ABC SalesBots
-    document.querySelector("#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div:nth-child(13) > div > div:nth-child(9) > div > button").click();
-  }
-}
-
 function upgradeGovernor() {
   document.querySelector("#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div.MuiContainer-root.MuiContainer-maxWidthLg.MuiContainer-disableGutters.css-1orai50 > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation1.css-wveda5 > div.MuiBox-root.css-70qvj9 > button").click();
   document.querySelector("body > div.jss19.MuiModal-root.css-8ndowl > div.jss20 > div > button").click();
