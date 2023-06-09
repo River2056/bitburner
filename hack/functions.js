@@ -10,10 +10,24 @@ function purchaseTopMostAugmentation(index) {
   document.querySelector("body > div.jss19.MuiModal-root.css-8ndowl > div.MuiBackdrop-root.css-919eu4").click();
 }
 
-function upgradeGovernor() {
-  document.querySelector("#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div.MuiContainer-root.MuiContainer-maxWidthLg.MuiContainer-disableGutters.css-1orai50 > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation1.css-wveda5 > div.MuiBox-root.css-70qvj9 > button").click();
-  document.querySelector("body > div.jss19.MuiModal-root.css-8ndowl > div.jss20 > div > button").click();
-  document.querySelector("body > div.jss19.MuiModal-root.css-8ndowl > div.MuiBackdrop-root.css-919eu4").click();
+function purchaseAllAugmentation(index = 1) {
+  let idx = index;
+  let btn = document.querySelector(`#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div.MuiContainer-root.MuiContainer-maxWidthLg.MuiContainer-disableGutters.css-1orai50 > div:nth-child(${idx + 1}) > div.MuiBox-root.css-70qvj9 > button`);
+  while (btn !== null && !btn.disabled && btn.innerText === "Buy") {
+    btn.click();
+    document.querySelector("body > div.jss19.MuiModal-root.css-8ndowl > div.jss20 > div > button").click();
+    document.querySelector("body > div.jss19.MuiModal-root.css-8ndowl > div.MuiBackdrop-root.css-919eu4").click();
+    idx++;
+    btn = document.querySelector(`#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div.MuiContainer-root.MuiContainer-maxWidthLg.MuiContainer-disableGutters.css-1orai50 > div:nth-child(${idx + 1}) > div.MuiBox-root.css-70qvj9 > button`);
+  }
+}
+
+function upgradeGovernor(num = 1) {
+  for (let i = 0; i < num; i++) {
+    document.querySelector("#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div.MuiContainer-root.MuiContainer-maxWidthLg.MuiContainer-disableGutters.css-1orai50 > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation1.css-wveda5 > div.MuiBox-root.css-70qvj9 > button").click();
+    document.querySelector("body > div.jss19.MuiModal-root.css-8ndowl > div.jss20 > div > button").click();
+    document.querySelector("body > div.jss19.MuiModal-root.css-8ndowl > div.MuiBackdrop-root.css-919eu4").click();
+  }
 }
 
 function checkElements() {
@@ -91,7 +105,7 @@ function exploitHashesInfiniteMoney() {
   let sellForMoney = hashList[0];
   console.log(sellForMoney.props.upg);
 
-  sellForMoney.props.upg.cost = 0.001;
+  sellForMoney.props.upg.cost = 0; // 0.001;
   sellForMoney.props.upg.value = Infinity;
 }
 
@@ -103,6 +117,6 @@ function exploitHashesCorpInfiniteMoney() {
   let sellForCoprFund = hashList[1];
   console.log(sellForCoprFund.props.upg);
 
-  // sellForCoprFund.props.upg.costPerLevel = 10;
+  sellForCoprFund.props.upg.costPerLevel = 0;
   sellForCoprFund.props.upg.value = 9e+200;
 }
