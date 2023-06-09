@@ -70,8 +70,6 @@ export async function main(ns) {
     count += runScript(ns, "gang.js");
     count += runScript(ns, "corp.js");
 
-    ns.tprint(`count: ${count}`);
-
     if (ns.ps(HOME).length > count) {
       ns.tprint(`SUCCESS running all essential scripts`);
       return;
