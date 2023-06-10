@@ -6,15 +6,15 @@ const CITIES = [
   "Ishima",
   "Volhaven",
 ];
-const JOBS = {
-  Operations: 0,
-  Engineer: 0,
-  Business: 0,
-  Management: 0,
-  "Research & Development": 0,
-  Intern: 0,
-  Unassigned: 0,
+
+const possibleDivisionNames = {
+  Software: ["Google", "Netflix", "Facebook", "Microsoft", "Apple", "Amazon", "Trend Micro"],
+  Restaurant: ["Habour", "Eatogether", "Buffalo City", "Gustoso", "Din Tai Fung"],
+  Tobacco: ["Seven Stars", "Mevius", "Mild Seven", "Japan Tobacco"],
+  Pharmaceutical: ["Umbrella", "Neo Umbrella", "Tricell"]
 };
+possibleDivisionNames["Real Estate"] = ["FundHive", "Sinyi Realty", "Eastern Realty", "YonQin Realty"];
+possibleDivisionNames["Computer Hardware"] = ["Intel", "Nvidia", "MSI", "ASUS"]
 
 /** @param {import(".").NS} ns*/
 function checkDivisionStats(ns) {
@@ -147,8 +147,8 @@ function redistributeEmployees(ns, division, city) {
         city,
         "Business",
         remainingJobs["Business"] +
-          remainingJobs["Intern"] +
-          remainingJobs["Unassigned"]
+        remainingJobs["Intern"] +
+        remainingJobs["Unassigned"]
       );
     else
       ns.corporation.setAutoJobAssignment(
@@ -156,8 +156,8 @@ function redistributeEmployees(ns, division, city) {
         city,
         "Operations",
         remainingJobs["Operations"] +
-          remainingJobs["Intern"] +
-          remainingJobs["Unassigned"]
+        remainingJobs["Intern"] +
+        remainingJobs["Unassigned"]
       );
   }
 }
@@ -229,10 +229,29 @@ function purchaseUnlocks(ns) {
     if (
       !ns.corporation.hasUnlock(unlock) &&
       ns.corporation.getCorporation().funds >
-        ns.corporation.getUnlockCost(unlock)
+      ns.corporation.getUnlockCost(unlock)
     )
       ns.corporation.purchaseUnlock(unlock);
   });
+}
+
+/** @param {import(".").NS} ns*/
+function autoResearch(ns, division) {
+  const researchNames = ns.corporation.getConstants().researchNames;
+  researchNames.forEach(research => {
+    if (!ns.corporation.hasResearched(division, research) &&
+      ns.corporation.getResearchCost(division, research) < ns.corporation.getDivision(division).researchPoints)
+      ns.corporation.research(division, research);
+  });
+}
+
+/** @param {import(".").NS} ns*/
+function expandIndustries(ns) {
+  const industryNames = ns.corporation.getConstants().industryNames;
+  const pickFromNames = industryNames.filter(name => Object.keys(possibleDivisionNames).includes(name));
+  const selectedIndustry = pickFromNames[Math.floor(Math.random() * pickFromNames.length)];
+  const divisionNames = possibleDivisionNames[selectedIndustry];
+  ns.corporation.expandIndustry(selectedIndustry, divisionNames[Math.floor(Math.random() * divisionNames.length)] + "_" + Date.now());
 }
 
 /** @param {import(".").NS} ns*/
@@ -262,7 +281,9 @@ async function manageCorporation(ns) {
           expandCities(ns, division);
 
           if (counter % (60 * 60) === 0) hireAdvert(ns, division);
+          autoResearch(ns, division);
           purchaseUnlocks(ns);
+          expandIndustries(ns);
         } catch (error) {
           // ns.tprint(`error occurred: ${error}`);
           ns.printf(`${division} has not expanded to ${city} yet`);
@@ -276,19 +297,21 @@ async function manageCorporation(ns) {
 
 /** @param {import(".").NS} ns*/
 function test(ns) {
-  ns.tprint();
+  const industryNames = ns.corporation.getConstants().industryNames;
+  ns.tprint(industryNames);
 }
 
 /** @param {import(".").NS} ns*/
 export async function main(ns) {
   // checkDivisionStats(ns);
   const args = ns.flags([
-    ["sellstock", false],
-    ["buystock", false],
+    ["sell", false],
+    ["buy", false],
+    ["test", false],
     ["amount", Math.ceil(ns.corporation.getCorporation().numShares / 2)],
   ]);
 
-  if (args && args.sellstock) {
+  if (args && args.sell) {
     // const originalSharePrice = ns.corporation.getCorporation().sharePrice;
     try {
       if (ns.corporation.getCorporation().numShares > 0) {
@@ -306,7 +329,7 @@ export async function main(ns) {
     return;
   }
 
-  if (args && args.buystock) {
+  if (args && args.buy) {
     try {
       // if (ns.corporation.getCorporation().sharePrice < originalSharePrice) {
       ns.tprint(`start buying back`);
@@ -326,6 +349,11 @@ export async function main(ns) {
       ns.tprint(`buy unsuccessful`);
       ns.tprint(error);
     }
+    return;
+  }
+
+  if (args && args.test) {
+    test(ns);
     return;
   }
 

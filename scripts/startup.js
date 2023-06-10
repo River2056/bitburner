@@ -67,7 +67,7 @@ export async function main(ns) {
       "true"
     );
 
-    count += runScript(ns, "gang.js");
+    // count += runScript(ns, "gang.js");
     count += runScript(ns, "corp.js");
 
     if (ns.ps(HOME).length > count) {
