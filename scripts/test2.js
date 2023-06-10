@@ -17,6 +17,15 @@ function purchaseUnlocks(ns) {
 }
 
 /** @param {import(".").NS} ns*/
+function purchaseDarkWebPrograms(ns) {
+  ns.tprint(ns.singularity.getDarkwebPrograms());
+  ns.tprint(ns.ls("home").find(e => e === "123.js"));
+}
+
+/** @param {import(".").NS} ns*/
 export async function main(ns) {
-  purchaseUnlocks(ns);
+  purchaseDarkWebPrograms(ns);
+  ns.singularity.getAugmentationsFromFaction
+  ns.singularity.getAugmentationPrice
+  ns.singularity.purchaseAugmentation
 }
