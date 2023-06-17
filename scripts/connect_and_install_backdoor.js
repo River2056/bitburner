@@ -8,7 +8,9 @@ export async function main(ns) {
       !node.hostname.startsWith("hacknet") && !node.hostname.startsWith("home")
   );
   for (const node of nodes) {
+    ns.tprint(`openPorts: ${node.hostname}`);
     openPorts(node.hostname, ns);
+    ns.tprint(`trying to nuke: ${node.hostname}`);
     nuke(node.hostname, ns);
     const routeArr = node.route.split(" > ");
     for (const r of routeArr) {
@@ -17,7 +19,8 @@ export async function main(ns) {
           r !== HOME &&
           !ns.getServer(r).backdoorInstalled &&
           ns.getHackingLevel() >= ns.getServer(r).requiredHackingSkill &&
-          ns.getServer(r).openPortCount >= ns.getServer(r).numOpenPortsRequired
+          ns.getServer(r).openPortCount >= ns.getServer(r).numOpenPortsRequired &&
+          ns.hasRootAccess(r)
         ) {
           await ns.singularity.installBackdoor();
           ns.tprintf(`done installing backdoor on ${r}`);

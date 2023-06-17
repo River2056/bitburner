@@ -37,17 +37,33 @@ function checkElements() {
   return objs;
 }
 
-function hacknetServers(index) {
+function hacknetServers(index = -1, level = 3000, maxRam = Math.pow(2, 20), cores = Math.pow(2, 16), cache = 500) {
+  const opts = {
+    level,
+    maxRam,
+    cores,
+    cache
+  };
   const arr = Array.from(document.querySelectorAll(".MuiBox-root"));
   const obj = arr.map(e => Object.entries(e));
   const hacknetServerList = obj[obj.length - 1][1][1].children;
+  if (index === -1) {
+    hacknetServerList.forEach(server => {
+      const node = server.props.node;
+      node.level = opts.level;
+      node.maxRam = opts.maxRam;
+      node.cores = opts.cores;
+      node.cache = opts.cache;
+    });
+    return;
+  }
   hacknetServerList.forEach((server, idx) => {
     if (index === idx) {
       const node = server.props.node;
-      node.level = 3000;
-      node.maxRam = Math.pow(2, 20);
-      node.cores = Math.pow(2, 16);
-      node.cache = 500;
+      node.level = opts.level;
+      node.maxRam = opts.maxRam;
+      node.cores = opts.cores;
+      node.cache = opts.cache;
     }
   });
   console.log(hacknetServerList);
