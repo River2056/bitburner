@@ -24,8 +24,15 @@ function purchaseDarkWebPrograms(ns) {
 
 /** @param {import(".").NS} ns*/
 export async function main(ns) {
-  purchaseDarkWebPrograms(ns);
-  ns.singularity.getAugmentationsFromFaction
-  ns.singularity.getAugmentationPrice
-  ns.singularity.purchaseAugmentation
+  /* const database = {
+    test: 123
+  };
+  ns.write("database.txt", JSON.stringify(database), "w"); */
+
+  const databaseContent = ns.read("database.txt");
+  ns.tprint(databaseContent);
+
+  const database = JSON.parse(databaseContent);
+  ns.tprint(database.test);
+  ns.tprint(database["test"]);
 }

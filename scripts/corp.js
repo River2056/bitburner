@@ -1,3 +1,5 @@
+let DEBUG = false;
+
 const CITIES = [
   "Aevum",
   "Chongqing",
@@ -49,10 +51,20 @@ function checkDivisionStats(ns) {
   });
 }
 
+/** @param {import(".").NS} ns*/
+function expandOfficeSize(ns, division, city) {
+  try {
+    ns.corporation.upgradeOfficeSize(division, city, 3);
+  } catch (error) {
+    if (DEBUG)
+      ns.tprint(`error occurred while expanding office size, error: ${error}`);
+  }
+}
+
 /**
  * @param {import(".").NS} ns
  * */
-function hireEmployee(ns) {
+function hireEmployee() {
   let count = 0;
 
   /**
@@ -269,8 +281,6 @@ function autoResearch(ns, division) {
 
 /** @param {import(".").NS} ns*/
 function expandIndustries(ns) {
-  if (ns.corporation.getCorporation().divisions.length >= 16) return;
-
   const industryNames = ns.corporation.getConstants().industryNames;
   const pickFromNames = industryNames.filter((name) =>
     Object.keys(possibleDivisionNames).includes(name)
@@ -291,11 +301,11 @@ function expandIndustries(ns) {
 }
 
 /** @param {import(".").NS} ns*/
-function manageCorpStocks(ns) {
+function manageCorpStocks() {
   let previousSellPrice = 0;
 
   /** @param {import(".").NS} ns*/
-  const manageStocks = () => {
+  const manageStocks = (ns) => {
     if (ns.corporation.getCorporation().shareSaleCooldown !== 0) return;
 
     const eightyPercentShares = Math.floor(
@@ -354,6 +364,15 @@ function manageDivisions(ns) {
   );
 }
 
+function setSmartSupply(ns, division, city) {
+  try {
+    ns.corporation.setSmartSupply(division, city, true);
+  } catch (error) {
+    if (DEBUG)
+      ns.tprint(`error occurred while setting smart supply: ${error}`);
+  }
+}
+
 /** @param {import(".").NS} ns*/
 async function manageCorporation(ns) {
   ns.disableLog("sleep");
@@ -362,8 +381,8 @@ async function manageCorporation(ns) {
     return;
   }
 
-  let hire = hireEmployee(ns);
-  const manageStocks = manageCorpStocks(ns);
+  let hire = hireEmployee();
+  const manageStocks = manageCorpStocks();
   let counter = 0;
 
   while (true) {
@@ -373,22 +392,23 @@ async function manageCorporation(ns) {
         try {
           expandIndustries(ns);
           upgradeWarehouse(ns, division, city);
-          ns.corporation.upgradeOfficeSize(division, city, 3);
+          expandOfficeSize(ns, division, city);
           hire(ns, division, city);
           levelCorporationUpgrades(ns);
 
           if (counter % 10 === 0) redistributeEmployees(ns, division, city);
           manageProducts(ns, division, city);
-          ns.corporation.setSmartSupply(division, city, true);
+          setSmartSupply(ns, division, city);
           expandCities(ns, division);
 
           if (counter % (60 * 60) === 0) hireAdvert(ns, division);
           autoResearch(ns, division);
           purchaseUnlocks(ns);
-          manageStocks();
+          manageStocks(ns);
           manageDivisions(ns);
         } catch (error) {
-          // ns.tprint(`error occurred: ${error}`);
+          if (DEBUG)
+            ns.tprint(`error occurred: ${error}`);
           ns.printf(`${division} has not expanded to ${city} yet`);
         }
       });
@@ -409,6 +429,7 @@ export async function main(ns) {
   const args = ns.flags([
     ["sell", false],
     ["buy", false],
+    ["debug", false],
     ["test", false],
     ["amount", Math.ceil(ns.corporation.getCorporation().numShares / 2)],
   ]);
@@ -459,5 +480,6 @@ export async function main(ns) {
     return;
   }
 
+  DEBUG = args.debug;
   await manageCorporation(ns);
 }
