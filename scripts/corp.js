@@ -166,8 +166,8 @@ function redistributeEmployees(ns, division, city) {
         city,
         "Business",
         remainingJobs["Business"] +
-          remainingJobs["Intern"] +
-          remainingJobs["Unassigned"]
+        remainingJobs["Intern"] +
+        remainingJobs["Unassigned"]
       );
     else
       ns.corporation.setAutoJobAssignment(
@@ -175,8 +175,8 @@ function redistributeEmployees(ns, division, city) {
         city,
         "Operations",
         remainingJobs["Operations"] +
-          remainingJobs["Intern"] +
-          remainingJobs["Unassigned"]
+        remainingJobs["Intern"] +
+        remainingJobs["Unassigned"]
       );
   }
 }
@@ -248,7 +248,7 @@ function purchaseUnlocks(ns) {
     if (
       !ns.corporation.hasUnlock(unlock) &&
       ns.corporation.getCorporation().funds >
-        ns.corporation.getUnlockCost(unlock)
+      ns.corporation.getUnlockCost(unlock)
     )
       ns.corporation.purchaseUnlock(unlock);
   });
@@ -261,7 +261,7 @@ function autoResearch(ns, division) {
     if (
       !ns.corporation.hasResearched(division, research) &&
       ns.corporation.getResearchCost(division, research) <
-        ns.corporation.getDivision(division).researchPoints
+      ns.corporation.getDivision(division).researchPoints
     )
       ns.corporation.research(division, research);
   });
@@ -282,8 +282,8 @@ function expandIndustries(ns) {
     ns.corporation.expandIndustry(
       selectedIndustry,
       divisionNames[Math.floor(Math.random() * divisionNames.length)] +
-        "_" +
-        Date.now()
+      "_" +
+      Date.now()
     );
   } catch (error) {
     ns.print("ERROR unable to expand! check if you have space to expand");
@@ -371,6 +371,7 @@ async function manageCorporation(ns) {
     corporation.divisions.forEach((division) => {
       CITIES.forEach((city) => {
         try {
+          expandIndustries(ns);
           upgradeWarehouse(ns, division, city);
           ns.corporation.upgradeOfficeSize(division, city, 3);
           hire(ns, division, city);
@@ -385,7 +386,6 @@ async function manageCorporation(ns) {
           autoResearch(ns, division);
           purchaseUnlocks(ns);
           manageStocks();
-          expandIndustries(ns);
           manageDivisions(ns);
         } catch (error) {
           // ns.tprint(`error occurred: ${error}`);
