@@ -5,50 +5,98 @@ function clickOnBtn(btn, times) {
 }
 
 function purchaseTopMostAugmentation(index) {
-  document.querySelector(`#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div.MuiContainer-root.MuiContainer-maxWidthLg.MuiContainer-disableGutters.css-1orai50 > div:nth-child(${index + 1}) > div.MuiBox-root.css-70qvj9 > button`).click();
-  document.querySelector("body > div.jss19.MuiModal-root.css-8ndowl > div.jss20 > div > button").click();
-  document.querySelector("body > div.jss19.MuiModal-root.css-8ndowl > div.MuiBackdrop-root.css-919eu4").click();
+  document
+    .querySelector(
+      `#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div.MuiContainer-root.MuiContainer-maxWidthLg.MuiContainer-disableGutters.css-1orai50 > div:nth-child(${
+        index + 1
+      }) > div.MuiBox-root.css-70qvj9 > button`
+    )
+    .click();
+  document
+    .querySelector(
+      "body > div.jss19.MuiModal-root.css-8ndowl > div.jss20 > div > button"
+    )
+    .click();
+  document
+    .querySelector(
+      "body > div.jss19.MuiModal-root.css-8ndowl > div.MuiBackdrop-root.css-919eu4"
+    )
+    .click();
 }
 
 function purchaseAllAugmentation(index = 1) {
   let idx = index;
-  let btn = document.querySelector(`#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div.MuiContainer-root.MuiContainer-maxWidthLg.MuiContainer-disableGutters.css-1orai50 > div:nth-child(${idx + 1}) > div.MuiBox-root.css-70qvj9 > button`);
+  let btn = document.querySelector(
+    `#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div.MuiContainer-root.MuiContainer-maxWidthLg.MuiContainer-disableGutters.css-1orai50 > div:nth-child(${
+      idx + 1
+    }) > div.MuiBox-root.css-70qvj9 > button`
+  );
   while (btn !== null && !btn.disabled && btn.innerText === "Buy") {
     btn.click();
-    document.querySelector("body > div.jss19.MuiModal-root.css-8ndowl > div.jss20 > div > button").click();
-    document.querySelector("body > div.jss19.MuiModal-root.css-8ndowl > div.MuiBackdrop-root.css-919eu4").click();
+    document
+      .querySelector(
+        "body > div.jss19.MuiModal-root.css-8ndowl > div.jss20 > div > button"
+      )
+      .click();
+    document
+      .querySelector(
+        "body > div.jss19.MuiModal-root.css-8ndowl > div.MuiBackdrop-root.css-919eu4"
+      )
+      .click();
     idx++;
-    btn = document.querySelector(`#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div.MuiContainer-root.MuiContainer-maxWidthLg.MuiContainer-disableGutters.css-1orai50 > div:nth-child(${idx + 1}) > div.MuiBox-root.css-70qvj9 > button`);
+    btn = document.querySelector(
+      `#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div.MuiContainer-root.MuiContainer-maxWidthLg.MuiContainer-disableGutters.css-1orai50 > div:nth-child(${
+        idx + 1
+      }) > div.MuiBox-root.css-70qvj9 > button`
+    );
   }
 }
 
 function upgradeGovernor(num = 1) {
   for (let i = 0; i < num; i++) {
-    document.querySelector("#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div.MuiContainer-root.MuiContainer-maxWidthLg.MuiContainer-disableGutters.css-1orai50 > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation1.css-wveda5 > div.MuiBox-root.css-70qvj9 > button").click();
-    document.querySelector("body > div.jss19.MuiModal-root.css-8ndowl > div.jss20 > div > button").click();
-    document.querySelector("body > div.jss19.MuiModal-root.css-8ndowl > div.MuiBackdrop-root.css-919eu4").click();
+    document
+      .querySelector(
+        "#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div.MuiContainer-root.MuiContainer-maxWidthLg.MuiContainer-disableGutters.css-1orai50 > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation1.css-wveda5 > div.MuiBox-root.css-70qvj9 > button"
+      )
+      .click();
+    document
+      .querySelector(
+        "body > div.jss19.MuiModal-root.css-8ndowl > div.jss20 > div > button"
+      )
+      .click();
+    document
+      .querySelector(
+        "body > div.jss19.MuiModal-root.css-8ndowl > div.MuiBackdrop-root.css-919eu4"
+      )
+      .click();
   }
 }
 
 function checkElements() {
   const nodeList = Array.from(document.querySelectorAll(".MuiBox-root"));
-  const objs = nodeList.map(e => Object.entries(e));
+  const objs = nodeList.map((e) => Object.entries(e));
   console.log(objs);
   return objs;
 }
 
-function hacknetServers(index = -1, level = 3000, maxRam = Math.pow(2, 20), cores = Math.pow(2, 16), cache = 500) {
+function hacknetServers(
+  index = -1,
+  level = 5000,
+  maxRam = Math.pow(2, 30),
+  cores = Math.pow(2, 26),
+  cache = 2500
+) {
   const opts = {
     level,
     maxRam,
     cores,
-    cache
+    cache,
   };
   const arr = Array.from(document.querySelectorAll(".MuiBox-root"));
-  const obj = arr.map(e => Object.entries(e));
+  const obj = arr.map((e) => Object.entries(e));
   const hacknetServerList = obj[obj.length - 1][1][1].children;
   if (index === -1) {
-    hacknetServerList.forEach(server => {
+    hacknetServerList.forEach((server) => {
       const node = server.props.node;
       node.level = opts.level;
       node.maxRam = opts.maxRam;
@@ -71,20 +119,25 @@ function hacknetServers(index = -1, level = 3000, maxRam = Math.pow(2, 20), core
 
 function gangMembers(index, num) {
   const objs = checkElements();
-  const list = objs.map(e => e[1][1].children); // .filter(arr => arr[0]["key"] !== undefined);
+  const list = objs.map((e) => e[1][1].children); // .filter(arr => arr[0]["key"] !== undefined);
 
   let member;
-  list.forEach(e => {
+  list.forEach((e) => {
     if (Array.isArray(e)) {
-      const temp = e.filter(el => el["key"] !== undefined && el["key"] !== null && el["key"].startsWith("ab"));
+      const temp = e.filter(
+        (el) =>
+          el["key"] !== undefined &&
+          el["key"] !== null &&
+          el["key"].startsWith("ab")
+      );
       if (temp.length > 0) member = temp;
     }
   });
   console.log(member);
 
   if (index === -1) {
-    member.forEach(m => {
-      m.props.member.hack_exp += num; // 1e+200; 
+    member.forEach((m) => {
+      m.props.member.hack_exp += num; // 1e+200;
       m.props.member.str_exp += num; // 1e+200;
       m.props.member.agi_exp += num; // 1e+200;
       m.props.member.def_exp += num; // 1e+200;
@@ -95,7 +148,7 @@ function gangMembers(index, num) {
 
   member.forEach((m, idx) => {
     if (index === idx) {
-      m.props.member.hack_exp += num; // 1e+200; 
+      m.props.member.hack_exp += num; // 1e+200;
       m.props.member.str_exp += num; // 1e+200;
       m.props.member.agi_exp += num; // 1e+200;
       m.props.member.def_exp += num; // 1e+200;
@@ -134,5 +187,16 @@ function exploitHashesCorpInfiniteMoney() {
   console.log(sellForCoprFund.props.upg);
 
   sellForCoprFund.props.upg.costPerLevel = 0;
-  sellForCoprFund.props.upg.value = 9e+200;
+  sellForCoprFund.props.upg.value = 9e200;
+}
+
+function sleevesRefresh() {
+  const objs = checkElements();
+  const sleevesObj = objs[objs.length - 2];
+  const sleeves = sleevesObj[1][1].children;
+  sleeves.forEach((sleeve) => {
+    sleeve.props.sleeve.shock = 0;
+    sleeve.props.sleeve.sync = 100;
+    sleeve.props.sleeve.memory = 100;
+  });
 }
