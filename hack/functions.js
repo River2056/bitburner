@@ -7,8 +7,7 @@ function clickOnBtn(btn, times) {
 function purchaseTopMostAugmentation(index) {
   document
     .querySelector(
-      `#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div.MuiContainer-root.MuiContainer-maxWidthLg.MuiContainer-disableGutters.css-1orai50 > div:nth-child(${
-        index + 1
+      `#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div.MuiContainer-root.MuiContainer-maxWidthLg.MuiContainer-disableGutters.css-1orai50 > div:nth-child(${index + 1
       }) > div.MuiBox-root.css-70qvj9 > button`
     )
     .click();
@@ -27,8 +26,7 @@ function purchaseTopMostAugmentation(index) {
 function purchaseAllAugmentation(index = 1) {
   let idx = index;
   let btn = document.querySelector(
-    `#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div.MuiContainer-root.MuiContainer-maxWidthLg.MuiContainer-disableGutters.css-1orai50 > div:nth-child(${
-      idx + 1
+    `#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div.MuiContainer-root.MuiContainer-maxWidthLg.MuiContainer-disableGutters.css-1orai50 > div:nth-child(${idx + 1
     }) > div.MuiBox-root.css-70qvj9 > button`
   );
   while (btn !== null && !btn.disabled && btn.innerText === "Buy") {
@@ -45,8 +43,7 @@ function purchaseAllAugmentation(index = 1) {
       .click();
     idx++;
     btn = document.querySelector(
-      `#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div.MuiContainer-root.MuiContainer-maxWidthLg.MuiContainer-disableGutters.css-1orai50 > div:nth-child(${
-        idx + 1
+      `#root > div.MuiBox-root.css-1ik4laa > div.jss1.MuiBox-root.css-0 > div.MuiContainer-root.MuiContainer-maxWidthLg.MuiContainer-disableGutters.css-1orai50 > div:nth-child(${idx + 1
       }) > div.MuiBox-root.css-70qvj9 > button`
     );
   }
@@ -191,12 +188,35 @@ function exploitHashesCorpInfiniteMoney() {
 }
 
 function sleevesRefresh() {
+  const propsToLook = ["children", "props", "sleeve"];
   const objs = checkElements();
-  const sleevesObj = objs[objs.length - 2];
-  const sleeves = sleevesObj[1][1].children;
-  sleeves.forEach((sleeve) => {
-    sleeve.props.sleeve.shock = 0;
-    sleeve.props.sleeve.sync = 100;
-    sleeve.props.sleeve.memory = 100;
+  const sleeves = [];
+  const lookForSleeves = (element) => {
+    if (!Array.isArray(element)) {
+      for (let key in element) {
+        if (propsToLook.includes(key)) {
+          if (key === "sleeve") {
+            sleeves.push(element[key]);
+            break;
+          }
+          lookForSleeves(element[key]);
+        }
+      }
+    } else {
+      for (let arr of element) {
+        lookForSleeves(arr);
+      }
+    }
+  };
+  lookForSleeves(objs);
+
+  sleeves.forEach(s => {
+    s.memory = 100;
+    s.sync = 100;
+    s.shock = 0;
+
+    for (let e in s.exp) {
+      s.exp[e] += 1e+100;
+    }
   });
 }
