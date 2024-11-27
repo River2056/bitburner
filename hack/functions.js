@@ -97,6 +97,7 @@ function hacknetServers(
       const node = server.props.node;
       node.level = opts.level;
       node.maxRam = opts.maxRam;
+      node.ram = opts.maxRam;
       node.cores = opts.cores;
       node.cache = opts.cache;
     });
@@ -107,6 +108,7 @@ function hacknetServers(
       const node = server.props.node;
       node.level = opts.level;
       node.maxRam = opts.maxRam;
+      node.ram = opts.maxRam;
       node.cores = opts.cores;
       node.cache = opts.cache;
     }
