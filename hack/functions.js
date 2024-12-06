@@ -223,7 +223,6 @@ function sleevesRefresh() {
   });
 }
 
-
 function hackingTheGame(player) {
   const AugmentationName = {
     NeuroFluxGovernor: "NeuroFlux Governor",
