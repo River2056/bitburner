@@ -50,7 +50,7 @@ export async function main(ns) {
     );
     ns.tprintf("e.g. run deploy_custom_scripts.js");
     ns.tprintf(
-      "eatra arguments can flexibily control monetThreshold and sercurityThreshold"
+      "extra arguments can flexibily control moneyThreshold and sercurityThreshold"
     );
     ns.tprintf(
       "e.g. run deploy_custom_scripts.js --money 0.9 (default 0.8) --securiry 5 (default 0)"
