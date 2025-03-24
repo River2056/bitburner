@@ -40,7 +40,7 @@ export async function main(ns) {
       "--type",
       "corpFund",
       "--loop",
-      "true"
+      "true",
     );
     count += runScript(
       ns,
@@ -48,7 +48,7 @@ export async function main(ns) {
       "--type",
       "money",
       "--loop",
-      "true"
+      "true",
     );
     count += runScript(
       ns,
@@ -56,7 +56,7 @@ export async function main(ns) {
       "--type",
       "improveStudy",
       "--loop",
-      "true"
+      "true",
     );
     count += runScript(
       ns,
@@ -64,11 +64,14 @@ export async function main(ns) {
       "--type",
       "exchangeCorpResearch",
       "--loop",
-      "true"
+      "true",
     );
 
     // count += runScript(ns, "gang.js");
     count += runScript(ns, "corp.js");
+
+    count += runScript(ns, "purchase_all_augmentations.js");
+    count += runScript(ns, "get_tor_dark_programs.js");
 
     if (ns.ps(HOME).length > count) {
       ns.tprint(`SUCCESS running all essential scripts`);
