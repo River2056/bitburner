@@ -76,6 +76,8 @@ function purchaseFactionAugmentations(pct, ns) {
           ns.printf(
             "ERROR Augmentation: %s purchase failed, required rep: %d, required money: %d",
             aug,
+            repRequired - factionRep,
+            augPrice - ns.getPlayer().money,
           );
           ns.printf(
             "WARNING faction: %s, required rep: %d, required money: %d",
