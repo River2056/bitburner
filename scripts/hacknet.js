@@ -93,6 +93,14 @@ export async function main(ns) {
     ns.tprint("--mode ==> which mode to run, e.g. node, level, ram, cores");
     ns.tprint("--pct ==> percentage of money delegated to script, e.g. 50");
     ns.tprint("> run hacknet.js --mode level --pct 50");
+    return;
+  }
+
+  if (!args.mode) {
+    ns.tprint(
+      "please provide mode argument, possible options: node, level, ram, cores, cache",
+    );
+    return;
   }
 
   const modeFunctions = getFunctions(args.mode, ns);
